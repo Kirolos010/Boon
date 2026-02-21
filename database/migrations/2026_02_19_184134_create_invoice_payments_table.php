@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('invoice_payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('invoice_id')->constrained('invoices')->cascadeOnDelete();
+            $table->decimal('amount', 14, 3); // مبلغ الدفع
+            $table->date('payment_date'); // تاريخ الدفع
+            $table->enum('payment_method', ['cash', 'check', 'transfer', 'other'])->default('cash');
+            $table->text('notes')->nullable();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->timestamps();
+
+            $table->index('invoice_id');
+            $table->index('payment_date');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('invoice_payments');
+    }
+};
