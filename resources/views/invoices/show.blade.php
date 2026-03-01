@@ -22,11 +22,12 @@
                 <div>
                     <h3 class="mb-1">فاتورة مبيعات</h3>
                     <div>رقم الفاتورة: {{ $invoice->invoice_number }}</div>
-                    <div>التاريخ: {{ $invoice->invoice_date }}</div>
+                    <div>التاريخ: {{ $invoice->invoice_date->format('Y-m-d H:i') }}</div>
                 </div>
                 <div class="text-start">
-                    <div><strong>بُن للقهوة والأعشاب</strong></div>
-                    <div>Boon Coffee & Herbs</div>
+                    <div style="font-size: 18px; font-weight: 700; color: #6F4E37;"> الغــــالـــى </div>
+                    <div style="font-size: 14px; color: #8B7355;"> للبن والأعشاب الفاخرة </div>
+                    <div style="font-size: 12px; color: #999;">El Ghaly Premium Coffee & Herbs</div>
                 </div>
             </div>
 
@@ -56,8 +57,8 @@
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $item->product->name_ar }}</td>
                         <td>{{ $item->quantity_kg }} كج</td>
-                        <td>{{ number_format($item->unit_price, 2) }} ر.س</td>
-                        <td>{{ number_format($item->quantity_kg * $item->unit_price, 2) }} ر.س</td>
+                        <td>{{ number_format($item->unit_price, 2) }} ج.م</td>
+                        <td>{{ number_format($item->quantity_kg * $item->unit_price, 2) }} ج.م</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -65,12 +66,14 @@
 
             <div class="d-flex justify-content-end mt-3">
                 <div style="min-width: 260px;">
-                    <div class="d-flex justify-content-between"><span>المجموع الفرعي:</span><strong>{{ number_format($invoice->subtotal, 2) }} ر.س</strong></div>
+                    <div class="d-flex justify-content-between"><span>المجموع الفرعي:</span><strong>{{ number_format($invoice->subtotal, 2) }} ج.م</strong></div>
                     @if($invoice->discount > 0)
-                        <div class="d-flex justify-content-between"><span>الخصم:</span><strong>- {{ number_format($invoice->discount, 2) }} ر.س</strong></div>
+                        <div class="d-flex justify-content-between"><span>الخصم:</span><strong>- {{ number_format($invoice->discount, 2) }} ج.م</strong></div>
                     @endif
-                    <div class="d-flex justify-content-between"><span>الضريبة (15%):</span><strong>{{ number_format($invoice->tax, 2) }} ر.س</strong></div>
-                    <div class="d-flex justify-content-between border-top mt-2 pt-2"><span><strong>الإجمالي:</strong></span><strong>{{ number_format($invoice->total, 2) }} ر.س</strong></div>
+                    {{-- Tax disabled
+                    <div class="d-flex justify-content-between"><span>الضريبة (15%):</span><strong>{{ number_format($invoice->tax, 2) }} ج.م</strong></div>
+                    --}}
+                    <div class="d-flex justify-content-between border-top mt-2 pt-2"><span><strong>الإجمالي:</strong></span><strong>{{ number_format($invoice->total, 2) }} ج.م</strong></div>
                 </div>
             </div>
 
@@ -87,11 +90,11 @@
             <div>
                 <h2 class="fw-bold mb-2"><i class="fas fa-file-invoice text-primary"></i> فاتورة مبيعات</h2>
                 <p class="text-muted mb-1">رقم الفاتورة: <span class="fw-bold text-dark">{{ $invoice->invoice_number }}</span></p>
-                <p class="text-muted mb-0">التاريخ: <span class="fw-bold text-dark">{{ $invoice->invoice_date }}</span></p>
+                <p class="text-muted mb-0">التاريخ: <span class="fw-bold text-dark">{{ $invoice->invoice_date->format('Y-m-d H:i') }}</span></p>
             </div>
             <div class="text-start">
-                <h5 class="mb-1">بُن للقهوة والأعشاب</h5>
-                <p class="text-muted small mb-0">Boon Coffee & Herbs</p>
+                <h5 class="mb-1">الغالى للبن والأعشاب</h5>
+                <p class="text-muted small mb-0"> El Ghaly Coffee & Herbs</p>
             </div>
         </div>
 
@@ -112,7 +115,7 @@
                     <p class="mb-0">
                         <strong>الرصيد الحالي:</strong>
                         <span class="fw-bold {{ $invoice->client->balance > 0 ? 'text-danger' : 'text-success' }}">
-                            {{ number_format($invoice->client->balance, 2) }} ر.س
+                            {{ number_format($invoice->client->balance, 2) }} ج.م
                         </span>
                     </p>
                 </div>
@@ -139,8 +142,8 @@
                             <td class="text-center">{{ $index + 1 }}</td>
                             <td class="fw-bold">{{ $item->product->name_ar }}</td>
                             <td class="text-center">{{ $item->quantity_kg }} كج</td>
-                            <td class="text-end">{{ number_format($item->unit_price, 2) }} ر.س</td>
-                            <td class="text-end fw-bold">{{ number_format($item->quantity_kg * $item->unit_price, 2) }} ر.س</td>
+                            <td class="text-end">{{ number_format($item->unit_price, 2) }} ج.م</td>
+                            <td class="text-end fw-bold">{{ number_format($item->quantity_kg * $item->unit_price, 2) }} ج.م</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -155,21 +158,23 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>المجموع الفرعي:</span>
-                            <span class="fw-bold">{{ number_format($invoice->subtotal, 2) }} ر.س</span>
+                            <span class="fw-bold">{{ number_format($invoice->subtotal, 2) }} ج.م</span>
                         </div>
                         @if($invoice->discount > 0)
                         <div class="d-flex justify-content-between mb-2 text-success">
                             <span>الخصم:</span>
-                            <span class="fw-bold">- {{ number_format($invoice->discount, 2) }} ر.س</span>
+                            <span class="fw-bold">- {{ number_format($invoice->discount, 2) }} ج.م</span>
                         </div>
                         @endif
+                        {{-- Tax disabled
                         <div class="d-flex justify-content-between mb-2">
                             <span>الضريبة (15%):</span>
-                            <span class="fw-bold">{{ number_format($invoice->tax, 2) }} ر.س</span>
+                            <span class="fw-bold">{{ number_format($invoice->tax, 2) }} ج.م</span>
                         </div>
+                        --}}
                         <div class="d-flex justify-content-between border-top pt-2 mt-2">
                             <span class="fs-5 fw-bold">الإجمالي:</span>
-                            <span class="fs-5 fw-bold text-primary">{{ number_format($invoice->total, 2) }} ر.س</span>
+                            <span class="fs-5 fw-bold text-primary">{{ number_format($invoice->total, 2) }} ج.م</span>
                         </div>
                     </div>
                 </div>
@@ -191,7 +196,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-money-bill-wave"></i> سجل الدفعات</span>
                 @if($invoice->remaining_balance > 0)
-                    <button onclick="openPaymentModal()" class="btn btn-success btn-sm">
+                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#paymentModal">
                         <i class="fas fa-plus"></i> تسجيل دفعة جديدة
                     </button>
                 @endif
@@ -213,10 +218,14 @@
                         @foreach($invoice->payments as $payment)
                         <tr>
                             <td>{{ $payment->payment_date }}</td>
-                            <td class="fw-bold">{{ number_format($payment->amount, 2) }} ر.س</td>
+                            <td class="fw-bold">{{ number_format($payment->amount, 2) }} ج.م</td>
                             <td>
                                 @if($payment->payment_method === 'cash')
                                     <span class="badge bg-success"><i class="fas fa-money-bill"></i> نقدي</span>
+                                @elseif($payment->payment_method === 'check')
+                                    <span class="badge bg-primary"><i class="fas fa-money-check"></i> شيك</span>
+                                @elseif($payment->payment_method === 'transfer')
+                                    <span class="badge bg-info"><i class="fas fa-exchange-alt"></i> تحويل بنكي</span>
                                 @elseif($payment->payment_method === 'card')
                                     <span class="badge bg-primary"><i class="fas fa-credit-card"></i> بطاقة</span>
                                 @elseif($payment->payment_method === 'bank_transfer')
@@ -238,7 +247,7 @@
                     <div class="card bg-primary bg-opacity-10 border-primary">
                         <div class="card-body text-center">
                             <p class="text-muted mb-2 small">إجمالي الفاتورة</p>
-                            <h4 class="fw-bold text-primary mb-0">{{ number_format($invoice->total, 2) }} ر.س</h4>
+                            <h4 class="fw-bold text-primary mb-0">{{ number_format($invoice->total, 2) }} ج.م</h4>
                         </div>
                     </div>
                 </div>
@@ -246,7 +255,7 @@
                     <div class="card bg-success bg-opacity-10 border-success">
                         <div class="card-body text-center">
                             <p class="text-muted mb-2 small">المدفوع</p>
-                            <h4 class="fw-bold text-success mb-0">{{ number_format($invoice->amount_paid, 2) }} ر.س</h4>
+                            <h4 class="fw-bold text-success mb-0">{{ number_format($invoice->amount_paid, 2) }} ج.م</h4>
                         </div>
                     </div>
                 </div>
@@ -254,7 +263,7 @@
                     <div class="card bg-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} bg-opacity-10 border-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }}">
                         <div class="card-body text-center">
                             <p class="text-muted mb-2 small">المتبقي</p>
-                            <h4 class="fw-bold text-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} mb-0">{{ number_format($invoice->remaining_balance, 2) }} ر.س</h4>
+                            <h4 class="fw-bold text-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} mb-0">{{ number_format($invoice->remaining_balance, 2) }} ج.م</h4>
                         </div>
                     </div>
                 </div>
@@ -265,7 +274,7 @@
             </p>
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle"></i>
-                <strong>المبلغ المستحق:</strong> {{ number_format($invoice->total, 2) }} ر.س
+                <strong>المبلغ المستحق:</strong> {{ number_format($invoice->total, 2) }} ج.م
             </div>
         @endif
     </x-card>
@@ -295,24 +304,38 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('invoices.record-payment', $invoice) }}" method="POST">
+                <form action="{{ route('invoices.record-payment', $invoice) }}" method="POST" id="paymentFormShow">
                     @csrf
                     <div class="modal-body">
+                        <!-- Payment Status Selection -->
                         <div class="mb-3">
+                            <label class="form-label fw-bold">نوع الدفع *</label>
+                            <select id="payment_status_show" class="form-select form-select-lg">
+                                <option value="full" selected>دفع المبلغ كامل</option>
+                                <option value="partial">دفع جزء من المبلغ</option>
+                            </select>
+                        </div>
+
+                        <!-- Amount Input (hidden initially for full payment) -->
+                        <div class="mb-3" id="amountInputGroupShow" style="display: none;">
                             <label class="form-label fw-bold">المبلغ *</label>
-                            <input type="number" name="amount" step="0.01" min="0.01"
+                            <input type="number" name="amount" id="paymentAmountShow" step="0.01" min="0.01"
                                 max="{{ $invoice->remaining_balance }}"
                                 value="{{ $invoice->remaining_balance }}"
                                 class="form-control form-control-lg" required>
-                            <small class="text-muted">المتبقي: {{ number_format($invoice->remaining_balance, 2) }} ر.س</small>
+                            <small class="text-muted">الحد الأقصى: <span id="maxAmountTextShow">{{ number_format($invoice->remaining_balance, 2) }}</span> ج.م</small>
                         </div>
+
+                        <!-- Hidden input for full payment amount -->
+                        <input type="hidden" name="amount_full" id="amountFullShow" value="{{ $invoice->remaining_balance }}">
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">طريقة الدفع *</label>
                             <select name="payment_method" class="form-select form-select-lg" required>
                                 <option value="cash">نقدي</option>
-                                <option value="card">بطاقة</option>
-                                <option value="bank_transfer">تحويل بنكي</option>
+                                <option value="check">شيك</option>
+                                <option value="transfer">تحويل بنكي</option>
+                                <option value="other">أخرى</option>
                             </select>
                         </div>
 
@@ -343,13 +366,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function openPaymentModal() {
-            const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            modal.show();
-        }
-    </script>
-
     <style>
         @media print {
             .no-print {
@@ -378,4 +394,110 @@
             display: none;
         }
     </style>
+
+    <script>
+        const remainingBalanceShow = {{ $invoice->remaining_balance }};
+        let paymentModalInstanceShow = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalElement = document.getElementById('paymentModal');
+            const form = document.getElementById('paymentFormShow');
+            const paymentStatusSelect = document.getElementById('payment_status_show');
+            const paymentAmountInput = document.getElementById('paymentAmountShow');
+
+            // Initialize modal only ONCE
+            paymentModalInstanceShow = new bootstrap.Modal(modalElement, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+
+            // Handle payment status change
+            if (paymentStatusSelect) {
+                paymentStatusSelect.addEventListener('change', function() {
+                    handlePaymentStatusChangeShow();
+                });
+            }
+
+            // Validate amount while typing
+            if (paymentAmountInput) {
+                paymentAmountInput.addEventListener('input', function() {
+                    validatePaymentAmountShow();
+                });
+            }
+
+            // Handle form submission
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const paymentStatus = paymentStatusSelect.value;
+
+                    if (paymentStatus === 'full') {
+                        document.getElementById('amountFullShow').value = remainingBalanceShow.toFixed(2);
+                        paymentAmountInput.value = remainingBalanceShow.toFixed(2);
+                    }
+                });
+            }
+
+            // Clean up when modal closes
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                // Reset form
+                form.reset();
+
+                // Reset all controls
+                paymentStatusSelect.value = 'full';
+                paymentAmountInput.value = remainingBalanceShow.toFixed(2);
+                paymentAmountInput.removeAttribute('name');
+                document.getElementById('amountFullShow').setAttribute('name', 'amount');
+                document.getElementById('amountInputGroupShow').style.display = 'none';
+
+                // Ensure no modal backdrop remains
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+                // Restore body scrolling
+                document.body.style.overflow = '';
+                document.body.classList.remove('modal-open');
+            });
+        });
+
+        function handlePaymentStatusChangeShow() {
+            const paymentStatus = document.getElementById('payment_status_show').value;
+            const amountInput = document.getElementById('paymentAmountShow');
+            const amountInputGroup = document.getElementById('amountInputGroupShow');
+            const amountFullInput = document.getElementById('amountFullShow');
+
+            if (paymentStatus === 'full') {
+                // Full payment
+                amountInput.value = remainingBalanceShow.toFixed(2);
+                amountInput.removeAttribute('name');
+                amountFullInput.setAttribute('name', 'amount');
+                amountInputGroup.style.display = 'none';
+            } else {
+                // Partial payment
+                amountInput.value = '';
+                amountInput.setAttribute('name', 'amount');
+                amountFullInput.removeAttribute('name');
+                amountInputGroup.style.display = 'block';
+                amountInput.focus();
+            }
+        }
+
+        function validatePaymentAmountShow() {
+            const amountInput = document.getElementById('paymentAmountShow');
+            const enteredAmount = parseFloat(amountInput.value);
+
+            if (enteredAmount > remainingBalanceShow) {
+                amountInput.value = remainingBalanceShow.toFixed(2);
+            }
+        }
+
+        // Auto print when print parameter is present
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('print') === '1') {
+                setTimeout(function() {
+                    window.print();
+                }, 1000);
+            }
+        });
+    </script>
 @endsection

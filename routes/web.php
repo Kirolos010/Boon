@@ -28,6 +28,11 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // User Profile
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.show');
+    Route::get('/profile/change-password', [UserController::class, 'changePasswordForm'])->name('profile.change-password');
+    Route::post('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.update-password');
+
     // Products
     Route::resource('products', ProductController::class);
     Route::get('/products/{product}/low-stock', [ProductController::class, 'lowStock'])->name('products.low-stock');

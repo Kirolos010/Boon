@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->string('purchase_number')->unique(); // رقم إذن الشراء
-            $table->foreignId('supplier_id')->constrained('suppliers')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->decimal('subtotal', 14, 3);
-            $table->decimal('tax', 14, 3)->default(0);
-            $table->decimal('total_cost', 14, 3);
-            $table->date('purchase_date');
-            $table->enum('status', ['pending', 'received', 'partial'])->default('pending');
+            $table->string('purchase_number')->nullable()->unique(); // رقم إذن الشراء
+            $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->decimal('subtotal', 14, 3)->nullable();
+            $table->decimal('tax', 14, 3)->nullable()->default(0);
+            $table->decimal('total_cost', 14, 3)->nullable();
+            $table->date('purchase_date')->nullable();
+            $table->enum('status', ['pending', 'received', 'partial'])->nullable()->default('pending');
             $table->text('notes')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('expense_category_id')->constrained('expense_categories')->cascadeOnDelete();
-            $table->decimal('amount', 12, 3); // المبلغ
-            $table->date('expense_date'); // تاريخ المصروف
-            $table->text('description')->nullable();
-            $table->text('description_ar')->nullable();
+            $table->foreignId('expense_category_id')->nullable()->constrained('expense_categories')->cascadeOnDelete();
+            $table->decimal('amount', 12, 3)->nullable(); // المبلغ
+            $table->date('expense_date')->nullable(); // تاريخ المصروف
+            $table->text('description')->nullable(); // الوصف
             $table->string('reference')->nullable(); // رقم الوثيقة إن وجدت
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->text('notes')->nullable(); // ملاحظات إضافية
+            $table->foreignId('created_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
 
             $table->index('expense_date');

@@ -85,4 +85,44 @@ class UserController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+
+    // الملف الشخصي
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('profile.show', compact('user'));
+    }
+
+    // عرض صفحة تغيير كلمة المرور
+    public function changePasswordForm()
+    {
+        return view('profile.change-password');
+    }
+
+    // معالجة تغيير كلمة المرور
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'current_password.required' => 'كلمة المرور الحالية مطلوبة',
+            'password.required' => 'كلمة المرور الجديدة مطلوبة',
+            'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
+            'password.confirmed' => 'كلمات المرور غير متطابقة',
+        ]);
+
+        $user = Auth::user();
+
+        // التحقق من كلمة المرور الحالية
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'كلمة المرور الحالية غير صحيحة']);
+        }
+
+        // تحديث كلمة المرور
+        $user->update(['password' => Hash::make($request->password)]);
+
+        return redirect()->route('profile.show')
+            ->with('success', 'تم تغيير كلمة المرور بنجاح');
+    }
 }

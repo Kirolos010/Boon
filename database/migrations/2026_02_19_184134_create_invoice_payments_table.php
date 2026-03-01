@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('invoice_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('invoice_id')->constrained('invoices')->cascadeOnDelete();
-            $table->decimal('amount', 14, 3); // مبلغ الدفع
-            $table->date('payment_date'); // تاريخ الدفع
-            $table->enum('payment_method', ['cash', 'check', 'transfer', 'other'])->default('cash');
+            $table->foreignId('invoice_id')->nullable()->constrained('invoices')->cascadeOnDelete();
+            $table->decimal('amount', 14, 3)->nullable(); // مبلغ الدفع
+            $table->date('payment_date')->nullable(); // تاريخ الدفع
+            $table->enum('payment_method', ['cash', 'check', 'transfer', 'other'])->nullable()->default('cash');
             $table->text('notes')->nullable();
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
 
             $table->index('invoice_id');

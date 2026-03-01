@@ -165,9 +165,9 @@
                         <tr>
                             <td>{{ $product['product_name'] ?? '' }}</td>
                             <td class="number">{{ number_format($product['quantity'] ?? 0, 2) }}</td>
-                            <td class="number">{{ number_format($product['revenue'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($product['cost'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($product['profit'] ?? 0, 2) }} ر.س</td>
+                            <td class="number">{{ number_format($product['revenue'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($product['cost'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($product['profit'] ?? 0, 2) }} ج.م</td>
                             <td class="number">{{ number_format((($product['revenue'] ?? 0) > 0 ? (($product['profit'] ?? 0) / ($product['revenue'] ?? 0) * 100) : 0), 1) }}%</td>
                         </tr>
                     @endforeach
@@ -196,9 +196,9 @@
                         <tr>
                             <td>{{ $client['client_name'] ?? '' }}</td>
                             <td class="number">{{ $client['invoices_count'] ?? 0 }}</td>
-                            <td class="number">{{ number_format($client['total_amount'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($client['paid_amount'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($client['remaining_amount'] ?? 0, 2) }} ر.س</td>
+                            <td class="number">{{ number_format($client['total_amount'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($client['paid_amount'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($client['remaining_amount'] ?? 0, 2) }} ج.م</td>
                             <td class="number">{{ number_format((($client['total_amount'] ?? 0) > 0 ? (($client['paid_amount'] ?? 0) / ($client['total_amount'] ?? 0) * 100) : 0), 1) }}%</td>
                         </tr>
                     @endforeach
@@ -226,9 +226,9 @@
                         <tr>
                             <td>{{ $category['category_name'] ?? '' }}</td>
                             <td class="number">{{ number_format($category['quantity'] ?? 0, 2) }}</td>
-                            <td class="number">{{ number_format($category['revenue'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($category['cost'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($category['profit'] ?? 0, 2) }} ر.س</td>
+                            <td class="number">{{ number_format($category['revenue'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($category['cost'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($category['profit'] ?? 0, 2) }} ج.م</td>
                         </tr>
                     @endforeach
                 </tbody>

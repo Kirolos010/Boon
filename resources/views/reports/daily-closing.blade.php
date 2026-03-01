@@ -19,7 +19,7 @@
             <h1 class="page-title">تقرير الإغلاق اليومي</h1>
             <p class="page-title-subtitle">ملخص يومي شامل للمبيعات والمصروفات والتدفق النقدي</p>
         </div>
-        <div class="page-actions">
+        {{-- <div class="page-actions">
             <form method="POST" action="{{ route('reports.export-pdf', 'daily-closing') }}" style="display: inline;">
                 @csrf
                 <button type="submit" class="btn btn-danger">
@@ -32,7 +32,7 @@
                     <i class="fas fa-file-excel"></i> تنزيل Excel
                 </button>
             </form>
-        </div>
+        </div> --}}
     </div>
 
     <!-- Main Summary Cards -->
@@ -42,28 +42,28 @@
                 icon="fas fa-arrow-up"
                 label="إجمالي الإيرادات"
                 value="{{ number_format($dailyClosing['revenue_total'], 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
                 icon="fas fa-coins"
                 label="إجمالي الأرباح"
                 value="{{ number_format($dailyClosing['profit_total'], 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
                 icon="fas fa-receipt"
                 label="إجمالي المصروفات"
                 value="{{ number_format($dailyClosing['expenses_total'], 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
                 icon="fas fa-cash-register"
                 label="صافي الربح"
                 value="{{ number_format($dailyClosing['net_profit'], 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
     </div>
 
@@ -82,17 +82,17 @@
                         </div>
                         <div class="col-6">
                             <small class="text-muted">الإيرادات</small>
-                            <p style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['invoices_revenue'], 2) }} ر.س</p>
+                            <p style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['invoices_revenue'], 2) }} ج.م</p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <small class="text-muted">التكلفة</small>
-                            <p style="font-weight: bold;">{{ number_format($dailyClosing['invoices_cost'], 2) }} ر.س</p>
+                            <p style="font-weight: bold;">{{ number_format($dailyClosing['invoices_cost'], 2) }} ج.م</p>
                         </div>
                         <div class="col-6">
                             <small class="text-muted">الربح</small>
-                            <p style="font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['invoices_profit'], 2) }} ر.س</p>
+                            <p style="font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['invoices_profit'], 2) }} ج.م</p>
                         </div>
                     </div>
                 </div>
@@ -111,17 +111,17 @@
                         </div>
                         <div class="col-6">
                             <small class="text-muted">الإيرادات</small>
-                            <p style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['quick_sales_revenue'], 2) }} ر.س</p>
+                            <p style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['quick_sales_revenue'], 2) }} ج.م</p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <small class="text-muted">التكلفة</small>
-                            <p style="font-weight: bold;">{{ number_format($dailyClosing['quick_sales_cost'], 2) }} ر.س</p>
+                            <p style="font-weight: bold;">{{ number_format($dailyClosing['quick_sales_cost'], 2) }} ج.م</p>
                         </div>
                         <div class="col-6">
                             <small class="text-muted">الربح</small>
-                            <p style="font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['quick_sales_profit'], 2) }} ر.س</p>
+                            <p style="font-weight: bold; color: #27ae60;">{{ number_format($dailyClosing['quick_sales_profit'], 2) }} ج.م</p>
                         </div>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                         @foreach($dailyClosing['expenses_by_category'] as $category)
                             <tr>
                                 <td>{{ $category['category_name'] ?? $category['category'] }}</td>
-                                <td class="text-end" style="font-weight: bold;">{{ number_format($category['total'], 2) }} ر.س</td>
+                                <td class="text-end" style="font-weight: bold;">{{ number_format($category['total'], 2) }} ج.م</td>
                                 <td class="text-end">
                                     <span class="badge badge-info">
                                         {{ number_format(($category['total'] / ($dailyClosing['expenses_total'] ?: 1) * 100), 1) }}%
@@ -178,7 +178,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <span style="font-weight: bold;">إجمالي الإيرادات:</span>
                             <span style="font-size: 18px; color: #27ae60; font-weight: bold;">
-                                {{ number_format($dailyClosing['revenue_total'], 2) }} ر.س
+                                {{ number_format($dailyClosing['revenue_total'], 2) }} ج.م
                             </span>
                         </div>
                     </div>
@@ -186,21 +186,21 @@
                     <div class="mb-3" style="border-bottom: 1px solid #e0e0e0; padding-bottom: 15px;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>التكلفة الإجمالية:</span>
-                            <span style="color: #e74c3c;">- {{ number_format($dailyClosing['total_cost'], 2) }} ر.س</span>
+                            <span style="color: #e74c3c;">- {{ number_format($dailyClosing['total_cost'], 2) }} ج.م</span>
                         </div>
                     </div>
 
                     <div class="mb-3" style="border-bottom: 1px solid #e0e0e0; padding-bottom: 15px;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>المصروفات:</span>
-                            <span style="color: #e74c3c;">- {{ number_format($dailyClosing['expenses_total'], 2) }} ر.س</span>
+                            <span style="color: #e74c3c;">- {{ number_format($dailyClosing['expenses_total'], 2) }} ج.م</span>
                         </div>
                     </div>
 
                     <div style="padding: 15px; background: var(--cream-light); border-radius: 8px; text-align: center;">
                         <small class="text-muted d-block mb-2">صافي الربح النهائي</small>
                         <p style="font-size: 28px; font-weight: bold; color: var(--coffee-dark); margin: 0;">
-                            {{ number_format($dailyClosing['net_profit'], 2) }} ر.س
+                            {{ number_format($dailyClosing['net_profit'], 2) }} ج.م
                         </p>
                     </div>
                 </div>
@@ -238,7 +238,7 @@
                     <div style="padding: 12px; background: var(--cream-light); border-radius: 6px;">
                         <small class="text-muted d-block">متوسط سعر العملية</small>
                         <p style="font-size: 20px; font-weight: bold; color: var(--coffee-dark); margin: 0;">
-                            {{ number_format(($dailyClosing['invoices_count'] > 0 ? ($dailyClosing['invoices_revenue'] / $dailyClosing['invoices_count']) : 0), 2) }} ر.س
+                            {{ number_format(($dailyClosing['invoices_count'] > 0 ? ($dailyClosing['invoices_revenue'] / $dailyClosing['invoices_count']) : 0), 2) }} ج.م
                         </p>
                     </div>
                 </div>
@@ -258,7 +258,7 @@
                     <div style="padding: 15px;">
                         <small class="text-muted d-block mb-2">المدفوع نقداً</small>
                         <p style="font-size: 22px; font-weight: bold; color: #27ae60;">
-                            {{ number_format($dailyClosing['payment_status']['cash'] ?? 0, 2) }} ر.س
+                            {{ number_format($dailyClosing['payment_status']['cash'] ?? 0, 2) }} ج.م
                         </p>
                     </div>
                 </div>
@@ -266,7 +266,7 @@
                     <div style="padding: 15px;">
                         <small class="text-muted d-block mb-2">الشيكات</small>
                         <p style="font-size: 22px; font-weight: bold; color: #3498db;">
-                            {{ number_format($dailyClosing['payment_status']['check'] ?? 0, 2) }} ر.س
+                            {{ number_format($dailyClosing['payment_status']['check'] ?? 0, 2) }} ج.م
                         </p>
                     </div>
                 </div>
@@ -274,7 +274,7 @@
                     <div style="padding: 15px;">
                         <small class="text-muted d-block mb-2">على الحساب</small>
                         <p style="font-size: 22px; font-weight: bold; color: #f39c12;">
-                            {{ number_format($dailyClosing['payment_status']['credit'] ?? 0, 2) }} ر.س
+                            {{ number_format($dailyClosing['payment_status']['credit'] ?? 0, 2) }} ج.م
                         </p>
                     </div>
                 </div>

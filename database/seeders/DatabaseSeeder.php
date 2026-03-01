@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
         // Seed roles first
         $this->call(RoleSeeder::class);
 
+        // Seed categories
+        $this->call(CategorySeeder::class);
+
         // Get roles
         $adminRole = Role::where('name', 'admin')->first();
         $salesRole = Role::where('name', 'sales')->first();
@@ -53,5 +56,12 @@ class DatabaseSeeder extends Seeder
                 'role_id' => $accountantRole?->id,
             ]
         );
+
+        // Seed clients and sample products
+        $this->call([
+            ExpenseCategorySeeder::class,
+            ClientSeeder::class,
+            ProductSeeder::class,
+        ]);
     }
 }

@@ -59,9 +59,9 @@
                             <td><strong>{{ $client->name_ar }}</strong></td>
                             <td>{{ $client->phone }}</td>
                             <td>{{ $client->email ?? '-' }}</td>
-                            <td>{{ number_format($client->invoices()->sum('total') ?? 0, 2) }} ر.س</td>
-                            <td>{{ number_format($client->total_debt, 2) }} ر.س</td>
-                            <td>{{ number_format($client->credit_limit, 2) }} ر.س</td>
+                            <td>{{ number_format($client->invoices()->sum('total') ?? 0, 2) }} ج.م</td>
+                            <td>{{ number_format($client->total_debt, 2) }} ج.م</td>
+                            <td>{{ number_format($client->credit_limit, 2) }} ج.م</td>
                             <td>
                                 <a href="{{ route('clients.show', $client) }}" class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-eye"></i>

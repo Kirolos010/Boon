@@ -1,9 +1,9 @@
 <div class="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">
-            <i class="fas fa-coffee"></i> Boon
+            <i class="fas fa-coffee"></i> الغــــالـــى
         </div>
-        <div class="sidebar-tagline">إدارة المبيعات والمخزون</div>
+        <div class="sidebar-tagline">🎋 للبن والأعشاب 🎋</div>
     </div>
 
     <ul class="sidebar-menu">
@@ -34,6 +34,14 @@
 
         <!-- Inventory Section -->
         <li>
+            <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
+                <i class="fas fa-boxes"></i>
+                <span>المخزون</span>
+            </a>
+        </li>
+
+        {{-- Inventory Section with submenu (commented out)
+        <li>
             <a href="javascript:void(0);" class="menu-toggle" data-toggle="inventory">
                 <i class="fas fa-boxes"></i>
                 <span>المخزون</span>
@@ -48,6 +56,7 @@
                 </a></li>
             </ul>
         </li>
+        --}}
 
         <!-- Clients -->
         <li>
@@ -101,20 +110,20 @@
                 <li><a href="{{ route('settings.categories.index') }}" class="{{ request()->routeIs('settings.categories.*') ? 'active' : '' }}">
                     <i class="fas fa-list"></i> الفئات
                 </a></li>
-                <li><a href="{{ route('settings.suppliers.index') }}" class="{{ request()->routeIs('settings.suppliers.*') ? 'active' : '' }}">
+                {{-- <li><a href="{{ route('settings.suppliers.index') }}" class="{{ request()->routeIs('settings.suppliers.*') ? 'active' : '' }}">
                     <i class="fas fa-truck"></i> الموردون
-                </a></li>
+                </a></li> --}}
             </ul>
         </li>
 
         @if(auth()->user()->isAdmin())
         <!-- Admin Only -->
-        <li>
+        {{-- <li>
             <a href="#">
                 <i class="fas fa-shield-alt"></i>
                 <span>إدارة النظام</span>
             </a>
-        </li>
+        </li> --}}
         @endif
     </ul>
 
@@ -127,6 +136,29 @@
         .sidebar-menu .submenu li a {
             display: flex;
             gap: 8px;
+        }
+
+        /* Arrow Rotation Animation */
+        .menu-toggle .fa-chevron-left {
+            transition: transform 0.3s ease;
+        }
+
+        /* Submenu items indent with bullet */
+        .sidebar-menu .submenu li a {
+            padding-right: 45px !important;
+            position: relative;
+        }
+
+        .sidebar-menu .submenu li a::before {
+            content: '';
+            position: absolute;
+            right: 28px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
         }
     </style>
 </div>

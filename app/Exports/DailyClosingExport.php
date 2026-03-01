@@ -75,7 +75,7 @@ class DailyClosingExport implements FromCollection, WithHeadings, WithStyles
 
     public function headings(): array
     {
-        return ['البيان', 'المبلغ (ر.س)'];
+        return ['البيان', 'المبلغ (ج.م)'];
     }
 
     public function styles(Worksheet $sheet)

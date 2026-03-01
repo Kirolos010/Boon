@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Supplier name
-            $table->string('name_ar'); // اسم الموزع
+            $table->string('name')->nullable(); // Supplier name
+            $table->string('name_ar')->nullable(); // اسم الموزع
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->text('address')->nullable();
             $table->text('address_ar')->nullable();
             $table->text('notes')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->nullable()->default(true);
             $table->timestamps();
         });
     }

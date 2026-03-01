@@ -71,8 +71,8 @@
                                 <td class="px-4 py-3 text-gray-700">{{ $index + 1 }}</td>
                                 <td class="px-4 py-3 text-gray-900 font-medium">{{ $item->product->name_ar }}</td>
                                 <td class="px-4 py-3 text-gray-700">{{ $item->quantity }}</td>
-                                <td class="px-4 py-3 text-gray-700">{{ number_format($item->cost_price, 2) }} ريال</td>
-                                <td class="px-4 py-3 text-gray-900 font-semibold">{{ number_format($item->quantity * $item->cost_price, 2) }} ريال</td>
+                                <td class="px-4 py-3 text-gray-700">{{ number_format($item->cost_price, 2) }} ج.م</td>
+                                <td class="px-4 py-3 text-gray-900 font-semibold">{{ number_format($item->quantity * $item->cost_price, 2) }} ج.م</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -86,15 +86,15 @@
                     <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-gray-700">المجموع الفرعي:</span>
-                            <span class="font-semibold">{{ number_format($purchase->subtotal, 2) }} ريال</span>
+                            <span class="font-semibold">{{ number_format($purchase->subtotal, 2) }} ج.م</span>
                         </div>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-gray-700">الضريبة (15%):</span>
-                            <span class="font-semibold">{{ number_format($purchase->tax, 2) }} ريال</span>
+                            <span class="font-semibold">{{ number_format($purchase->tax, 2) }} ج.م</span>
                         </div>
                         <div class="flex justify-between items-center text-xl border-t pt-2 mt-2">
                             <span class="text-gray-900 font-bold">الإجمالي:</span>
-                            <span class="font-bold text-purple-600">{{ number_format($purchase->total, 2) }} ريال</span>
+                            <span class="font-bold text-purple-600">{{ number_format($purchase->total, 2) }} ج.م</span>
                         </div>
                     </div>
                 </div>

@@ -64,9 +64,9 @@ class ProfitReportExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             'البيان',
-            'المبلغ (ر.س)',
-            'التكلفة (ر.س)',
-            'الربح (ر.س)',
+            'المبلغ (ج.م)',
+            'التكلفة (ج.م)',
+            'الربح (ج.م)',
         ];
     }
 

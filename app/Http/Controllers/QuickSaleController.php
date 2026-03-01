@@ -18,6 +18,7 @@ class QuickSaleController extends Controller
     {
         $quickSales = Invoice::where('type', 'quick')
             ->with('items')
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         return view('quick-sales.index', ['quickSales' => $quickSales]);
@@ -25,7 +26,7 @@ class QuickSaleController extends Controller
 
     public function create()
     {
-        $products = Product::all();
+        $products = Product::with(['mainCategory', 'subCategory'])->get();
 
         return view('quick-sales.create', compact('products'));
     }
@@ -34,6 +35,24 @@ class QuickSaleController extends Controller
     {
         try {
             $data = $request->validated();
+
+            // Set default values if not provided
+            $data['invoice_date'] = $data['sale_date'] ?? now()->toDateString();
+            unset($data['sale_date']);
+
+            // Set default payment method if not provided
+            if (empty($data['payment_method'])) {
+                $data['payment_method'] = 'cash';
+            }
+
+            // Transform items data
+            foreach ($data['items'] as &$item) {
+                $item['quantity_kg'] = $item['quantity'];
+                $item['unit_price'] = $item['price'];
+                unset($item['quantity']);
+                unset($item['price']);
+            }
+
             $sale = $this->invoiceService->createQuickSale($data);
 
             return redirect()->route('quick-sales.index')
@@ -47,14 +66,10 @@ class QuickSaleController extends Controller
     {
         $sale = Invoice::where('type', 'quick')
             ->where('id', $id)
-            ->with('items.product', 'payments')
+            ->with('items.product')
             ->firstOrFail();
-        $details = $this->invoiceService->getInvoiceDetails($sale);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $details,
-        ]);
+        return view('quick-sales.show', compact('sale'));
     }
 
     public function destroy(string $id)
@@ -63,15 +78,10 @@ class QuickSaleController extends Controller
             $sale = Invoice::findOrFail($id);
             $this->invoiceService->cancelInvoice($sale);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'تم إلغاء عملية البيع بنجاح',
-            ]);
+            return redirect()->route('quick-sales.index')
+                ->with('success', 'تم إلغاء عملية البيع بنجاح');
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 400);
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 }

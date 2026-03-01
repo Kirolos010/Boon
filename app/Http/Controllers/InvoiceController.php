@@ -21,6 +21,7 @@ class InvoiceController extends Controller
         $invoices = Invoice::with('client', 'items')
             ->whereNotNull('client_id')
             ->where('type', 'regular')
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         return view('invoices.index', ['invoices' => $invoices]);
@@ -29,7 +30,9 @@ class InvoiceController extends Controller
     public function create()
     {
         $clients = Client::active()->get();
-        $products = Product::where('current_stock_kg', '>', 0)->get();
+        $products = Product::with(['mainCategory', 'subCategory'])
+            ->where('current_stock_kg', '>', 0)
+            ->get();
 
         return view('invoices.create', compact('clients', 'products'));
     }
@@ -62,7 +65,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::with('items')
             ->findOrFail($id);
         $clients = Client::all();
-        $products = Product::all();
+        $products = Product::with(['mainCategory', 'subCategory'])->get();
 
         return view('invoices.edit', compact('invoice', 'clients', 'products'));
     }

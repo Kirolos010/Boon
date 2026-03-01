@@ -67,16 +67,16 @@ class DashboardController extends Controller
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : Carbon::now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : Carbon::now()->endOfMonth();
 
-        $salesByProduct = $this->reportService->salesByProduct($startDate, $endDate);
-        $salesByClient = $this->reportService->salesByClient($startDate, $endDate);
-        $salesByCategory = $this->reportService->salesByCategory($startDate, $endDate);
+        $salesByProductReport = $this->reportService->salesByProduct($startDate, $endDate);
+        $salesByClientReport = $this->reportService->salesByClient($startDate, $endDate);
+        $salesByCategoryReport = $this->reportService->salesByCategory($startDate, $endDate);
 
         return view('reports.sales', [
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'by_product' => $salesByProduct,
-            'by_client' => $salesByClient,
-            'by_category' => $salesByCategory,
+            'salesByProduct' => collect($salesByProductReport['data'] ?? []),
+            'salesByClient' => collect($salesByClientReport['data'] ?? []),
+            'salesByCategory' => collect($salesByCategoryReport['data'] ?? []),
         ]);
     }
 
@@ -85,32 +85,32 @@ class DashboardController extends Controller
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : Carbon::now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : Carbon::now()->endOfMonth();
 
-        $report = $this->reportService->profitReport($startDate, $endDate);
+        $profitReport = $this->reportService->profitReport($startDate, $endDate);
 
         return view('reports.profit', [
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'report' => $report,
+            'profitReport' => $profitReport,
         ]);
     }
 
     public function inventoryReport()
     {
-        $report = $this->reportService->inventoryReport();
+        $inventoryReport = $this->reportService->inventoryReport();
 
         return view('reports.inventory', [
-            'report' => $report,
+            'inventoryReport' => $inventoryReport,
         ]);
     }
 
     public function dailyClosingReport(Request $request)
     {
         $date = $request->input('date') ? Carbon::parse($request->input('date'))->toDateString() : Carbon::now()->toDateString();
-        $report = $this->reportService->dailyClosingReport($date);
+        $dailyClosing = $this->reportService->dailyClosingReport($date);
 
         return view('reports.daily-closing', [
             'date' => $date,
-            'report' => $report,
+            'dailyClosing' => $dailyClosing,
         ]);
     }
 }

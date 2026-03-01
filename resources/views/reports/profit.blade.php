@@ -19,7 +19,7 @@
             <h1 class="page-title">تقرير الأرباح</h1>
             <p class="page-title-subtitle">تحليل الأرباح والخسائر والمصروفات</p>
         </div>
-        <div class="page-actions">
+        {{-- <div class="page-actions">
             <form method="POST" action="{{ route('reports.export-pdf', 'profit') }}" style="display: inline;">
                 @csrf
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
@@ -36,7 +36,7 @@
                     <i class="fas fa-file-excel"></i> تنزيل Excel
                 </button>
             </form>
-        </div>
+        </div> --}}
     </div>
 
     <!-- Date Filter -->
@@ -67,28 +67,28 @@
                 icon="fas fa-dollar-sign"
                 label="إجمالي الإيراد"
                 value="{{ number_format($profitReport['sales_data']['total_revenue'] ?? 0, 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
                 icon="fas fa-minus-circle"
                 label="إجمالي التكاليف"
                 value="{{ number_format($profitReport['sales_data']['total_cost'] ?? 0, 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
                 icon="fas fa-chart-line"
                 label="الربح الإجمالي"
                 value="{{ number_format($profitReport['net_data']['gross_profit'] ?? 0, 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
                 icon="fas fa-check-circle"
                 label="الربح الصافي"
                 value="{{ number_format($profitReport['net_data']['net_profit'] ?? 0, 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
     </div>
 
@@ -108,11 +108,11 @@
                     </tr>
                     <tr>
                         <td>الإيراد:</td>
-                        <td class="text-end">{{ number_format($profitReport['sales_data']['regular_revenue'] ?? 0, 2) }} ر.س</td>
+                        <td class="text-end">{{ number_format($profitReport['sales_data']['regular_revenue'] ?? 0, 2) }} ج.م</td>
                     </tr>
                     <tr>
                         <td>التكلفة:</td>
-                        <td class="text-end">{{ number_format($profitReport['sales_data']['regular_cost'] ?? 0, 2) }} ر.س</td>
+                        <td class="text-end">{{ number_format($profitReport['sales_data']['regular_cost'] ?? 0, 2) }} ج.م</td>
                     </tr>
                 </table>
             </div>
@@ -125,11 +125,11 @@
                     </tr>
                     <tr>
                         <td>الإيراد:</td>
-                        <td class="text-end">{{ number_format($profitReport['sales_data']['quick_revenue'] ?? 0, 2) }} ر.س</td>
+                        <td class="text-end">{{ number_format($profitReport['sales_data']['quick_revenue'] ?? 0, 2) }} ج.م</td>
                     </tr>
                     <tr>
                         <td>التكلفة:</td>
-                        <td class="text-end">{{ number_format($profitReport['sales_data']['quick_cost'] ?? 0, 2) }} ر.س</td>
+                        <td class="text-end">{{ number_format($profitReport['sales_data']['quick_cost'] ?? 0, 2) }} ج.م</td>
                     </tr>
                 </table>
             </div>
@@ -146,7 +146,7 @@
             <div class="table-responsive">
                 <table class="table table-hover table-sm">
                     <thead>
-                        <tr style="background: var(--cream-light);">
+                         <tr style="background: var(--cream-light);">
                             <th>فئة النفقة</th>
                             <th class="text-end">المبلغ</th>
                             <th class="text-end">النسبة المئوية</th>
@@ -155,8 +155,8 @@
                     <tbody>
                         @foreach($profitReport['expenses_data'] as $expense)
                             <tr>
-                                <td><strong>{{ $expense['category'] }}</strong></td>
-                                <td class="text-end">{{ number_format($expense['amount'], 2) }} ر.س</td>
+                                <td><strong>{{ $expense['category_name_ar'] ?? $expense['category_name'] }}</strong></td>
+                                <td class="text-end">{{ number_format($expense['amount'], 2) }} ج.م</td>
                                 <td class="text-end">
                                     <span class="badge badge-warning">{{ number_format($expense['percentage'], 1) }}%</span>
                                 </td>
@@ -164,7 +164,7 @@
                         @endforeach
                         <tr style="border-top: 2px solid var(--cream-medium); background: var(--cream-light); font-weight: bold;">
                             <td>الإجمالي</td>
-                            <td class="text-end">{{ number_format(collect($profitReport['expenses_data'])->sum('amount'), 2) }} ر.س</td>
+                            <td class="text-end">{{ number_format(collect($profitReport['expenses_data'])->sum('amount'), 2) }} ج.م</td>
                             <td class="text-end">100%</td>
                         </tr>
                     </tbody>
@@ -184,15 +184,15 @@
         <table class="table table-borderless">
             <tr style="border-bottom: 2px solid var(--cream-light);">
                 <td style="font-weight: bold;">الربح الإجمالي</td>
-                <td class="text-end" style="font-weight: bold;">{{ number_format($profitReport['net_data']['gross_profit'] ?? 0, 2) }} ر.س</td>
+                <td class="text-end" style="font-weight: bold;">{{ number_format($profitReport['net_data']['gross_profit'] ?? 0, 2) }} ج.م</td>
             </tr>
             <tr style="border-bottom: 2px solid var(--cream-light);">
                 <td style="font-weight: bold;">ناقص: إجمالي النفقات</td>
-                <td class="text-end" style="font-weight: bold;">- {{ number_format($profitReport['net_data']['total_expenses'] ?? 0, 2) }} ر.س</td>
+                <td class="text-end" style="font-weight: bold;">- {{ number_format($profitReport['net_data']['total_expenses'] ?? 0, 2) }} ج.م</td>
             </tr>
             <tr style="background: var(--cream-light); font-weight: bold; font-size: 18px;">
                 <td>الربح الصافي</td>
-                <td class="text-end" style="color: #28a745;">{{ number_format($profitReport['net_data']['net_profit'] ?? 0, 2) }} ر.س</td>
+                <td class="text-end" style="color: #28a745;">{{ number_format($profitReport['net_data']['net_profit'] ?? 0, 2) }} ج.م</td>
             </tr>
         </table>
     </x-card>

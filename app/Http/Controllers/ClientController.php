@@ -40,10 +40,7 @@ class ClientController extends Controller
         $client = Client::with('invoices.items', 'invoices.payments')
             ->findOrFail($id);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $client,
-        ]);
+        return view('clients.show', ['client' => $client]);
     }
 
     public function edit(string $id)
@@ -87,11 +84,8 @@ class ClientController extends Controller
     public function invoices(string $id)
     {
         $client = Client::findOrFail($id);
-        $invoices = $client->invoices()->paginate(10);
+        $invoices = $client->invoices()->paginate(15);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $invoices,
-        ]);
+        return view('clients.invoices', compact('client', 'invoices'));
     }
 }

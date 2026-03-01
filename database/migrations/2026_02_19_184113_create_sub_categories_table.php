@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('sub_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('main_category_id')->constrained('main_categories')->cascadeOnDelete();
-            $table->string('name'); // Brazilian, Indonesian
-            $table->string('name_ar'); // برازيلي, اندونيسي
+            $table->foreignId('main_category_id')->nullable()->constrained('main_categories')->cascadeOnDelete();
+            $table->string('name')->nullable(); // Brazilian, Indonesian
+            $table->string('name_ar')->nullable(); // برازيلي, اندونيسي
             $table->text('description')->nullable();
             $table->string('description_ar')->nullable();
             $table->timestamps();

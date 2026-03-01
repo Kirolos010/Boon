@@ -109,14 +109,14 @@
                                 value="{{ $product->current_stock_kg }}"
                                 step="0.01" />
                         </div>
-                        <div class="col-md-4">
+                        {{-- <div class="col-md-4">
                             <x-form-group
                                 type="select"
                                 name="supplier_id"
                                 label="المورد"
                                 :options="$suppliers ?? []"
                                 value="{{ $product->supplier_id }}" />
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="row">
@@ -162,7 +162,7 @@
                     @endif
                 </p>
                 <p><strong>الربح حسب الكج:</strong>
-                    {{ number_format($product->selling_price_per_kg - $product->purchase_price_per_kg, 2) }} ر.س
+                    {{ number_format($product->selling_price_per_kg - $product->purchase_price_per_kg, 2) }} ج.م
                 </p>
             </x-card>
 

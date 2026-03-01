@@ -93,7 +93,7 @@
                             <td>{{ $purchase->supplier->name }}</td>
                             <td>{{ $purchase->created_at->format('Y-m-d') }}</td>
                             <td>{{ $purchase->items->count() }}</td>
-                            <td>{{ number_format($purchase->total_cost, 2) }} ر.س</td>
+                            <td>{{ number_format($purchase->total_cost, 2) }} ج.م</td>
                             <td>
                                 @if($purchase->status === 'pending')
                                     <span class="badge badge-warning">منتظر</span>

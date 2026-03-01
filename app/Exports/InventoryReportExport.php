@@ -25,7 +25,7 @@ class InventoryReportExport implements FromCollection, WithHeadings, WithStyles
         $rows->push(['']);
         $rows->push(['إجمالي المنتجات', $this->data['summary']['total_products'] ?? 0]);
         $rows->push(['إجمالي الكمية (كج)', $this->data['summary']['total_quantity_kg'] ?? 0]);
-        $rows->push(['قيمة المخزون (ر.س)', $this->data['summary']['total_value'] ?? 0]);
+        $rows->push(['قيمة المخزون (ج.م)', $this->data['summary']['total_value'] ?? 0]);
         $rows->push(['منتجات الحد الأدنى', $this->data['summary']['low_stock_count'] ?? 0]);
 
         $rows->push(['']);

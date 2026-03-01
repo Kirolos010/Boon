@@ -152,7 +152,7 @@
         </div>
         <div class="summary-item">
             <label>قيمة المخزون</label>
-            <div class="value">{{ number_format($data['summary']['total_value'] ?? 0, 2) }} ر.س</div>
+            <div class="value">{{ number_format($data['summary']['total_value'] ?? 0, 2) }} ج.م</div>
         </div>
         <div class="summary-item">
             <label>منتجات حد أدنى</label>

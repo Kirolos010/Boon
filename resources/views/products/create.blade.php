@@ -18,6 +18,18 @@
         <h1 class="page-title">{{ isset($product) ? 'تعديل المنتج' : 'إضافة منتج جديد' }}</h1>
     </div>
 
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h6 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> خطأ في النموذج:</h6>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <x-card>
         <form action="{{ isset($product) ? route('products.update', $product) : route('products.store') }}" method="POST">
             @csrf
@@ -38,7 +50,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="sku" class="form-label">كود المنتج (SKU)</label>
-                        <input type="text" id="sku" class="form-control" value="{{ $product->sku ?? '' }}" readonly />
+                        <input type="text" id="sku" name="sku" class="form-control bg-light" value="{{ $product->sku ?? '' }}" readonly style="background-color: #f8f9fa;" />
                         <small class="form-text text-muted">يتم توليده تلقائياً</small>
                     </div>
                 </div>
@@ -110,14 +122,14 @@
                         value="{{ $product->current_stock_kg ?? '' }}"
                         step="0.01" />
                 </div>
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <x-form-group
                         type="select"
                         name="supplier_id"
                         label="المورد"
                         :options="$suppliers ?? []"
                         value="{{ $product->supplier_id ?? '' }}" />
-                </div>
+                </div> --}}
             </div>
 
             <div class="row">

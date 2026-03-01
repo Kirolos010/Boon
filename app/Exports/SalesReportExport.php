@@ -28,12 +28,12 @@ class SalesReportExport implements FromCollection, WithHeadings, WithStyles
 
             foreach ($this->data['by_product'] as $product) {
                 $rows->push([
-                    $product['product_name'] ?? '',
-                    $product['quantity'] ?? 0,
-                    $product['revenue'] ?? 0,
-                    $product['cost'] ?? 0,
+                    $product['product_name_ar'] ?? $product['product_name'] ?? '',
+                    $product['total_quantity_kg'] ?? 0,
+                    $product['total_revenue'] ?? 0,
+                    $product['total_cost'] ?? 0,
                     $product['profit'] ?? 0,
-                    (($product['revenue'] ?? 0) > 0 ? (($product['profit'] ?? 0) / ($product['revenue'] ?? 0) * 100) : 0)
+                    (($product['total_revenue'] ?? 0) > 0 ? (($product['profit'] ?? 0) / ($product['total_revenue'] ?? 0) * 100) : 0)
                 ]);
             }
 
@@ -45,12 +45,12 @@ class SalesReportExport implements FromCollection, WithHeadings, WithStyles
             if (isset($this->data['by_client'])) {
                 foreach ($this->data['by_client'] as $client) {
                     $rows->push([
-                        $client['client_name'] ?? '',
-                        $client['invoices_count'] ?? 0,
+                        $client['client_name_ar'] ?? $client['client_name'] ?? '',
+                        $client['total_invoices'] ?? 0,
                         $client['total_amount'] ?? 0,
-                        $client['paid_amount'] ?? 0,
-                        $client['remaining_amount'] ?? 0,
-                        (($client['total_amount'] ?? 0) > 0 ? (($client['paid_amount'] ?? 0) / ($client['total_amount'] ?? 0) * 100) : 0)
+                        $client['total_paid'] ?? 0,
+                        $client['total_pending'] ?? 0,
+                        (($client['total_amount'] ?? 0) > 0 ? (($client['total_paid'] ?? 0) / ($client['total_amount'] ?? 0) * 100) : 0)
                     ]);
                 }
             }

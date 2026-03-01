@@ -11,8 +11,8 @@ class Expense extends Model
         'amount',
         'expense_date',
         'description',
-        'description_ar',
         'reference',
+        'notes',
         'created_by',
     ];
 

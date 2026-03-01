@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('expense_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Transportation, Roasting, etc.
-            $table->string('name_ar')->unique(); // نقل, تحميص, الخ .
+            $table->string('name')->nullable()->unique(); // Transportation, Roasting, etc.
+            $table->string('name_ar')->nullable()->unique(); // نقل, تحميص, الخ .
             $table->text('description')->nullable();
             $table->timestamps();
         });

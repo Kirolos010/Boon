@@ -8,14 +8,14 @@ class StoreInvoiceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null && ($this->user()->isAdmin() || $this->user()->isSales());
+        return auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSales());
     }
 
     public function rules(): array
     {
         return [
             'client_id' => 'nullable|exists:clients,id',
-            'invoice_date' => 'nullable|date',
+            'invoice_date' => 'nullable|date_format:Y-m-d\TH:i|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity_kg' => 'required|numeric|min:0.01',
@@ -31,6 +31,9 @@ class StoreInvoiceRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'invoice_date.date_format' => 'صيغة التاريخ والوقت غير صحيحة',
+            'invoice_date.date' => 'التاريخ والوقت غير صحيح',
+
             'items.required' => 'يجب إضافة عنصر واحد على الأقل',
             'items.array' => 'العناصر يجب أن تكون قائمة',
             'items.min' => 'يجب إضافة عنصر واحد على الأقل',
@@ -41,10 +44,6 @@ class StoreInvoiceRequest extends FormRequest
             'items.*.quantity_kg.required' => 'الكمية مطلوبة لكل عنصر',
             'items.*.quantity_kg.numeric' => 'الكمية يجب أن تكون رقماً',
             'items.*.quantity_kg.min' => 'الكمية يجب أن تكون أكبر من صفر',
-
-            'items.*.unit_price.required' => 'السعر مطلوب لكل عنصر',
-            'items.*.unit_price.numeric' => 'السعر يجب أن يكون رقماً',
-            'items.*.unit_price.min' => 'السعر يجب أن يكون أكبر من أو يساوي صفر',
 
             'client_id.exists' => 'العميل المحدد غير موجود',
 

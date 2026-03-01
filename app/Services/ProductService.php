@@ -275,8 +275,24 @@ class ProductService
      */
     private function generateSku(string $productName): string
     {
-        // Take first 4 characters of product name (Arabic or English)
-        $prefix = substr(preg_replace('/[^a-zA-Z0-9آ-ي]/', '', $productName), 0, 4);
+        // Arabic to English transliteration map
+        $arabicToEnglish = [
+            'ا' => 'a', 'أ' => 'a', 'إ' => 'a', 'آ' => 'a',
+            'ب' => 'b', 'ت' => 't', 'ث' => 'th', 'ج' => 'j',
+            'ح' => 'h', 'خ' => 'kh', 'د' => 'd', 'ذ' => 'th',
+            'ر' => 'r', 'ز' => 'z', 'س' => 's', 'ش' => 'sh',
+            'ص' => 's', 'ض' => 'd', 'ط' => 't', 'ظ' => 'z',
+            'ع' => 'a', 'غ' => 'gh', 'ف' => 'f', 'ق' => 'q',
+            'ك' => 'k', 'ل' => 'l', 'م' => 'm', 'ن' => 'n',
+            'ه' => 'h', 'و' => 'w', 'ي' => 'y', 'ى' => 'a',
+            'ة' => 'h', 'ء' => 'a'
+        ];
+
+        // Convert Arabic to English
+        $englishName = str_replace(array_keys($arabicToEnglish), array_values($arabicToEnglish), $productName);
+
+        // Take first 4 characters (English only)
+        $prefix = substr(preg_replace('/[^a-zA-Z0-9]/', '', $englishName), 0, 4);
         if (empty($prefix)) {
             $prefix = 'PROD';
         }

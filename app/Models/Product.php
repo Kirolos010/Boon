@@ -98,6 +98,30 @@ class Product extends Model
     }
 
     /**
+     * Get current stock in kilograms
+     */
+    public function currentStock()
+    {
+        return $this->current_stock_kg;
+    }
+
+    /**
+     * Get selling price (alias for selling_price_per_kg)
+     */
+    public function getSellingPriceAttribute()
+    {
+        return $this->selling_price_per_kg;
+    }
+
+    /**
+     * Get purchase price (alias for purchase_price_per_kg)
+     */
+    public function getPurchasePriceAttribute()
+    {
+        return $this->purchase_price_per_kg;
+    }
+
+    /**
      * Get profit margin percentage
      */
     public function getProfitMarginPercentage()

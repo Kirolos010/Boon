@@ -7,7 +7,7 @@
                     <div class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
                         <div style="background: linear-gradient(135deg, #8B6F47 0%, #6B5438 100%); color: white; padding: 40px 20px; text-align: center;">
                             <h2 style="margin: 0; font-weight: bold; font-size: 28px;">📝 إنشاء حساب جديد</h2>
-                            <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">انضم إلى نظام إدارة مبيعات ومخزون بون</p>
+                            <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">انضم إلى نظام إدارة مبيعات ومخزون الغالى</p>
                         </div>
 
                         <!-- Card Body -->

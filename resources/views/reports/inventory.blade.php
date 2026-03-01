@@ -19,7 +19,7 @@
             <h1 class="page-title">تقرير المخزون</h1>
             <p class="page-title-subtitle">حالة المخزون الحالية وتقييمه</p>
         </div>
-        <div class="page-actions">
+        {{-- <div class="page-actions">
             <form method="POST" action="{{ route('reports.export-pdf', 'inventory') }}" style="display: inline;">
                 @csrf
                 <button type="submit" class="btn btn-danger">
@@ -32,7 +32,7 @@
                     <i class="fas fa-file-excel"></i> تنزيل Excel
                 </button>
             </form>
-        </div>
+        </div> --}}
     </div>
 
     <!-- Summary Cards -->
@@ -56,7 +56,7 @@
                 icon="fas fa-dollar-sign"
                 label="قيمة المخزون"
                 value="{{ number_format($inventoryReport['summary']['total_value'] ?? 0, 2) }}"
-                change="ر.س" />
+                change="ج.م" />
         </div>
         <div class="col-md-3">
             <x-stat-card
@@ -73,7 +73,7 @@
             <i class="fas fa-boxes"></i> تفاصيل المخزون
         @endslot
 
-        @if($inventoryReport['products']->count() > 0)
+        @if(count($inventoryReport['products']) > 0)
             <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                 <table class="table table-hover table-sm">
                     <thead style="position: sticky; top: 0;">
@@ -91,12 +91,12 @@
                     <tbody>
                         @foreach($inventoryReport['products'] as $product)
                             <tr>
-                                <td><strong>{{ $product['name_ar'] ?? $product['name'] }}</strong></td>
+                                <td><strong>{{ $product['product_name_ar'] ?? $product['product_name'] }}</strong></td>
                                 <td>{{ $product['category'] ?? '-' }}</td>
                                 <td class="text-end">{{ number_format($product['current_stock_kg'], 2) }}</td>
-                                <td class="text-end">{{ number_format($product['purchase_price_per_kg'], 2) }} ر.س</td>
-                                <td class="text-end">{{ number_format($product['stock_value'], 2) }} ر.س</td>
-                                <td class="text-end">{{ number_format($product['selling_price_per_kg'], 2) }} ر.س</td>
+                                <td class="text-end">{{ number_format($product['purchase_price_per_kg'], 2) }} ج.م</td>
+                                <td class="text-end">{{ number_format($product['stock_value'], 2) }} ج.م</td>
+                                <td class="text-end">{{ number_format($product['selling_price_per_kg'], 2) }} ج.م</td>
                                 <td class="text-end">
                                     <span class="badge badge-success">{{ number_format($product['profit_margin'], 1) }}%</span>
                                 </td>
@@ -140,10 +140,10 @@
                         @foreach($inventoryReport['products'] as $product)
                             @if($product['status'] === 'low' || $product['status'] === 'out')
                                 <tr>
-                                    <td><strong>{{ $product['name_ar'] }}</strong></td>
+                                    <td><strong>{{ $product['product_name_ar'] ?? $product['product_name'] }}</strong></td>
                                     <td class="text-end">{{ $product['current_stock_kg'] }} كج</td>
-                                    <td class="text-end">{{ $product['minimum_stock_alert'] }} كج</td>
-                                    <td class="text-end" style="color: #dc3545;">{{ $product['shortage'] }} كج</td>
+                                    <td class="text-end">{{ $product['minimum_alert'] }} كج</td>
+                                    <td class="text-end" style="color: #dc3545;">{{ max(0, $product['minimum_alert'] - $product['current_stock_kg']) }} كج</td>
                                 </tr>
                             @endif
                         @endforeach

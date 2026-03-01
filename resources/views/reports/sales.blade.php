@@ -19,7 +19,7 @@
             <h1 class="page-title">تقرير المبيعات</h1>
             <p class="page-title-subtitle">تحليل مفصل لمبيعات المنتجات والعملاء والفئات</p>
         </div>
-        <div class="page-actions">
+        {{-- <div class="page-actions">
             <form method="POST" action="{{ route('reports.export-pdf', 'sales') }}" style="display: inline;">
                 @csrf
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
@@ -36,7 +36,7 @@
                     <i class="fas fa-file-excel"></i> تنزيل Excel
                 </button>
             </form>
-        </div>
+        </div> --}}
     </div>
 
     <!-- Date Filter -->
@@ -83,12 +83,12 @@
                     <tbody>
                         @foreach($salesByProduct as $item)
                             <tr>
-                                <td><strong>{{ $item['name_ar'] ?? $item['name'] }}</strong></td>
+                                <td><strong>{{ $item['product_name_ar'] ?? $item['product_name'] }}</strong></td>
                                 <td class="text-end">{{ number_format($item['total_quantity_kg'], 2) }}</td>
-                                <td class="text-end">{{ number_format($item['average_price'], 2) }} ر.س</td>
-                                <td class="text-end">{{ number_format($item['total_revenue'], 2) }} ر.س</td>
-                                <td class="text-end">{{ number_format($item['total_cost'], 2) }} ر.س</td>
-                                <td class="text-end" style="color: #28a745; font-weight: bold;">{{ number_format($item['profit'], 2) }} ر.س</td>
+                                <td class="text-end">{{ number_format($item['average_price'], 2) }} ج.م</td>
+                                <td class="text-end">{{ number_format($item['total_revenue'], 2) }} ج.م</td>
+                                <td class="text-end">{{ number_format($item['total_cost'], 2) }} ج.م</td>
+                                <td class="text-end" style="color: #28a745; font-weight: bold;">{{ number_format($item['profit'], 2) }} ج.م</td>
                                 <td class="text-end">
                                     <span class="badge badge-success">{{ number_format($item['profit_margin'], 1) }}%</span>
                                 </td>
@@ -97,9 +97,9 @@
                         <tr style="border-top: 2px solid var(--cream-medium); background: var(--cream-light); font-weight: bold;">
                             <td colspan="2">الإجمالي</td>
                             <td class="text-end"></td>
-                            <td class="text-end">{{ number_format($salesByProduct->sum('total_revenue'), 2) }} ر.س</td>
-                            <td class="text-end">{{ number_format($salesByProduct->sum('total_cost'), 2) }} ر.س</td>
-                            <td class="text-end" style="color: #28a745;">{{ number_format($salesByProduct->sum('profit'), 2) }} ر.س</td>
+                            <td class="text-end">{{ number_format($salesByProduct->sum('total_revenue'), 2) }} ج.م</td>
+                            <td class="text-end">{{ number_format($salesByProduct->sum('total_cost'), 2) }} ج.م</td>
+                            <td class="text-end" style="color: #28a745;">{{ number_format($salesByProduct->sum('profit'), 2) }} ج.م</td>
                             <td class="text-end">{{ number_format(($salesByProduct->sum('profit') / $salesByProduct->sum('total_revenue') * 100), 1) }}%</td>
                         </tr>
                     </tbody>
@@ -132,11 +132,11 @@
                     <tbody>
                         @foreach($salesByClient as $item)
                             <tr>
-                                <td><strong>{{ $item['name'] }}</strong></td>
+                                <td><strong>{{ $item['client_name_ar'] ?? $item['client_name'] }}</strong></td>
                                 <td class="text-end">{{ $item['total_invoices'] }}</td>
-                                <td class="text-end">{{ number_format($item['total_amount'], 2) }} ر.س</td>
-                                <td class="text-end" style="color: #28a745;">{{ number_format($item['total_paid'], 2) }} ر.س</td>
-                                <td class="text-end" style="color: #ffc107;">{{ number_format($item['total_pending'], 2) }} ر.س</td>
+                                <td class="text-end">{{ number_format($item['total_amount'], 2) }} ج.م</td>
+                                <td class="text-end" style="color: #28a745;">{{ number_format($item['total_paid'], 2) }} ج.م</td>
+                                <td class="text-end" style="color: #ffc107;">{{ number_format($item['total_pending'], 2) }} ج.م</td>
                                 <td class="text-end">
                                     <span class="badge badge-info">{{ number_format($item['payment_rate'], 1) }}%</span>
                                 </td>
@@ -172,11 +172,11 @@
                     <tbody>
                         @foreach($salesByCategory as $item)
                             <tr>
-                                <td><strong>{{ $item['name_ar'] ?? $item['name'] }}</strong></td>
+                                <td><strong>{{ $item['category_name_ar'] ?? $item['category_name'] }}</strong></td>
                                 <td class="text-end">{{ number_format($item['total_quantity_kg'], 2) }}</td>
-                                <td class="text-end">{{ number_format($item['total_revenue'], 2) }} ر.س</td>
-                                <td class="text-end">{{ number_format($item['total_cost'], 2) }} ر.س</td>
-                                <td class="text-end" style="color: #28a745;">{{ number_format($item['profit'], 2) }} ر.س</td>
+                                <td class="text-end">{{ number_format($item['total_revenue'], 2) }} ج.م</td>
+                                <td class="text-end">{{ number_format($item['total_cost'], 2) }} ج.م</td>
+                                <td class="text-end" style="color: #28a745;">{{ number_format($item['profit'], 2) }} ج.م</td>
                                 <td class="text-end">
                                     <span class="badge badge-success">{{ number_format($item['profit_margin'], 1) }}%</span>
                                 </td>

@@ -90,8 +90,8 @@
                             </td>
                             <td>{{ $product->subCategory->name_ar ?? 'N/A' }}</td>
                             <td>{{ $product->current_stock_kg }} كج</td>
-                            <td>{{ number_format($product->purchase_price_per_kg, 2) }} ر.س</td>
-                            <td>{{ number_format($product->selling_price_per_kg, 2) }} ر.س</td>
+                            <td>{{ number_format($product->purchase_price_per_kg, 2) }} ج.م</td>
+                            <td>{{ number_format($product->selling_price_per_kg, 2) }} ج.م</td>
                             <td>
                                 @if($product->current_stock_kg > $product->minimum_stock_alert)
                                     <span class="badge badge-success">متوفر</span>

@@ -157,15 +157,15 @@
                     <div class="space-y-3">
                         <div class="flex justify-between items-center pb-2">
                             <span class="text-gray-700 font-medium">المجموع الفرعي:</span>
-                            <span id="subtotalDisplay" class="font-bold text-lg text-gray-900">{{ number_format($purchase->subtotal, 2) }} ريال</span>
+                            <span id="subtotalDisplay" class="font-bold text-lg text-gray-900">{{ number_format($purchase->subtotal, 2) }} ج.م</span>
                         </div>
                         <div class="flex justify-between items-center pb-2 border-b border-purple-300">
                             <span class="text-gray-700 font-medium">الضريبة (15%):</span>
-                            <span id="taxDisplay" class="font-bold text-lg text-gray-900">{{ number_format($purchase->tax, 2) }} ريال</span>
+                            <span id="taxDisplay" class="font-bold text-lg text-gray-900">{{ number_format($purchase->tax, 2) }} ج.م</span>
                         </div>
                         <div class="flex justify-between items-center pt-2">
                             <span class="text-gray-900 font-bold text-xl">إجمالي التكلفة:</span>
-                            <span id="totalDisplay" class="font-bold text-2xl text-purple-600">{{ number_format($purchase->total, 2) }} ريال</span>
+                            <span id="totalDisplay" class="font-bold text-2xl text-purple-600">{{ number_format($purchase->total, 2) }} ج.م</span>
                         </div>
                     </div>
                 </div>
@@ -264,9 +264,9 @@
             const tax = subtotal * 0.15;
             const total = subtotal + tax;
 
-            document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2) + ' ريال';
-            document.getElementById('taxDisplay').textContent = tax.toFixed(2) + ' ريال';
-            document.getElementById('totalDisplay').textContent = total.toFixed(2) + ' ريال';
+            document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2) + ' ج.م';
+            document.getElementById('taxDisplay').textContent = tax.toFixed(2) + ' ج.م';
+            document.getElementById('totalDisplay').textContent = total.toFixed(2) + ' ج.م';
         }
 
         function removeRow(button) {

@@ -72,19 +72,19 @@
                         </tr>
                         <tr>
                             <td><strong>إجمالي المبيعات:</strong></td>
-                            <td class="text-end">{{ number_format($today_summary['total_sales'] ?? 0, 2) }} ر.س</td>
+                            <td class="text-end">{{ number_format($today_summary['total_sales'] ?? 0, 2) }} ج.م</td>
                         </tr>
                         <tr>
                             <td><strong>إجمالي الأرباح:</strong></td>
-                            <td class="text-end" style="color: #28a745;">{{ number_format($today_summary['total_profit'] ?? 0, 2) }} ر.س</td>
+                            <td class="text-end" style="color: #28a745;">{{ number_format($today_summary['total_profit'] ?? 0, 2) }} ج.م</td>
                         </tr>
                         <tr>
                             <td><strong>المبالغ المدفوعة:</strong></td>
-                            <td class="text-end">{{ number_format($today_summary['total_paid'] ?? 0, 2) }} ر.س</td>
+                            <td class="text-end">{{ number_format($today_summary['total_paid'] ?? 0, 2) }} ج.م</td>
                         </tr>
                         <tr style="border-top: 2px solid var(--cream-medium);">
                             <td><strong>المبالغ المعلقة:</strong></td>
-                            <td class="text-end" style="color: #ffc107;">{{ number_format($today_summary['total_pending'] ?? 0, 2) }} ر.س</td>
+                            <td class="text-end" style="color: #ffc107;">{{ number_format($today_summary['total_pending'] ?? 0, 2) }} ج.م</td>
                         </tr>
                     </table>
                 @endif
@@ -141,7 +141,7 @@
                                 <tr>
                                     <td>{{ $product['product_name_ar'] ?? $product['product_name'] }}</td>
                                     <td class="text-end">{{ number_format($product['total_quantity_kg'], 2) }} كج</td>
-                                    <td class="text-end">{{ number_format($product['total_revenue'], 2) }} ر.س</td>
+                                    <td class="text-end">{{ number_format($product['total_revenue'], 2) }} ج.م</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -170,7 +170,7 @@
                                 <tr>
                                     <td>{{ $client['client_name_ar'] ?? $client['client_name'] }}</td>
                                     <td class="text-end">{{ $client['total_invoices'] }}</td>
-                                    <td class="text-end">{{ number_format($client['total_amount'], 2) }} ر.س</td>
+                                    <td class="text-end">{{ number_format($client['total_amount'], 2) }} ج.م</td>
                                 </tr>
                             @endforeach
                         </tbody>

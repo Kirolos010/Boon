@@ -188,21 +188,51 @@ class ReportService
         $startDate = $startDate ? Carbon::parse($startDate) : now()->subDays(30);
         $endDate = $endDate ? Carbon::parse($endDate) : now();
 
-        $invoices = Invoice::dateBetween($startDate->toDateString(), $endDate->toDateString())
+        // Regular invoices
+        $regularInvoices = Invoice::regular()
+            ->dateBetween($startDate->toDateString(), $endDate->toDateString())
             ->with('items.product')
             ->get();
 
-        $totalRevenue = 0;
-        $totalCost = 0;
-        $totalProfit = 0;
+        $regularRevenue = 0;
+        $regularCost = 0;
+        $regularProfit = 0;
 
-        foreach ($invoices as $invoice) {
+        foreach ($regularInvoices as $invoice) {
             $revenue = $invoice->total;
-            $totalRevenue += $revenue;
-            $profit = $this->invoiceService->calculateProfit($invoice);
-            $totalProfit += $profit;
-            $totalCost += $revenue - $profit;
+            $regularRevenue += $revenue;
+            $profit = $invoice->gross_profit ?? $invoice->items->sum(function ($item) {
+                $costPrice = $item->cost_price_per_kg ?? ($item->product->purchase_price_per_kg ?? 0);
+                return ($item->unit_price - $costPrice) * $item->quantity_kg;
+            });
+            $regularProfit += $profit;
+            $regularCost += $invoice->total_cost ?? ($revenue - $profit);
         }
+
+        // Quick sales
+        $quickSales = Invoice::quickSales()
+            ->dateBetween($startDate->toDateString(), $endDate->toDateString())
+            ->with('items.product')
+            ->get();
+
+        $quickRevenue = 0;
+        $quickCost = 0;
+        $quickProfit = 0;
+
+        foreach ($quickSales as $invoice) {
+            $revenue = $invoice->total;
+            $quickRevenue += $revenue;
+            $profit = $invoice->gross_profit ?? $invoice->items->sum(function ($item) {
+                $costPrice = $item->cost_price_per_kg ?? ($item->product->purchase_price_per_kg ?? 0);
+                return ($item->unit_price - $costPrice) * $item->quantity_kg;
+            });
+            $quickProfit += $profit;
+            $quickCost += $invoice->total_cost ?? ($revenue - $profit);
+        }
+
+        $totalRevenue = $regularRevenue + $quickRevenue;
+        $totalCost = $regularCost + $quickCost;
+        $totalProfit = $regularProfit + $quickProfit;
 
         // Get expenses for period
         $expenses = Expense::dateBetween($startDate->toDateString(), $endDate->toDateString())
@@ -220,9 +250,15 @@ class ReportService
             $expensesByCategory[] = [
                 'category_name' => $category->name,
                 'category_name_ar' => $category->name_ar,
-                'total' => round($categoryTotal, 3),
+                'amount' => round($categoryTotal, 3),
                 'count' => $categoryExpenses->count(),
+                'percentage' => 0, // Will be calculated after total is known
             ];
+        }
+
+        // Calculate percentages
+        foreach ($expensesByCategory as &$expense) {
+            $expense['percentage'] = $totalExpenses > 0 ? round(($expense['amount'] / $totalExpenses) * 100, 2) : 0;
         }
 
         $netProfit = $totalProfit - $totalExpenses;
@@ -237,17 +273,22 @@ class ReportService
                 'total_cost' => round($totalCost, 3),
                 'gross_profit' => round($totalProfit, 3),
                 'gross_profit_margin' => $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0,
+                'regular_invoices_count' => $regularInvoices->count(),
+                'regular_revenue' => round($regularRevenue, 3),
+                'regular_cost' => round($regularCost, 3),
+                'quick_sales_count' => $quickSales->count(),
+                'quick_revenue' => round($quickRevenue, 3),
+                'quick_cost' => round($quickCost, 3),
             ],
-            'expenses_data' => [
-                'total_expenses' => round($totalExpenses, 3),
-                'by_category' => $expensesByCategory,
-            ],
+            'expenses_data' => $expensesByCategory,
             'net_data' => [
+                'gross_profit' => round($totalProfit, 3),
+                'total_expenses' => round($totalExpenses, 3),
                 'net_profit' => round($netProfit, 3),
                 'net_profit_margin' => $totalRevenue > 0 ? round(($netProfit / $totalRevenue) * 100, 2) : 0,
             ],
             'summary' => [
-                'total_invoices' => $invoices->count(),
+                'total_invoices' => $regularInvoices->count() + $quickSales->count(),
                 'total_expenses_transactions' => Expense::dateBetween($startDate->toDateString(), $endDate->toDateString())->count(),
             ],
         ];
@@ -268,8 +309,12 @@ class ReportService
         foreach ($products as $product) {
             $value = $product->current_stock_kg * $product->purchase_price_per_kg;
             $totalValue += $value;
+            $isLowStock = $product->current_stock_kg <= $product->minimum_stock_alert;
+            $profitMargin = $product->purchase_price_per_kg > 0
+                ? (($product->selling_price_per_kg - $product->purchase_price_per_kg) / $product->purchase_price_per_kg) * 100
+                : 0;
 
-            if ($product->isLowStock()) {
+            if ($isLowStock) {
                 $lowStockCount++;
             }
 
@@ -281,10 +326,11 @@ class ReportService
                 'category' => $product->mainCategory->name_ar,
                 'current_stock_kg' => round($product->current_stock_kg, 3),
                 'minimum_alert' => round($product->minimum_stock_alert, 3),
-                'status' => $product->isLowStock() ? 'low' : 'ok',
+                'status' => $isLowStock ? 'low' : 'ok',
                 'purchase_price_per_kg' => round($product->purchase_price_per_kg, 3),
+                'selling_price_per_kg' => round($product->selling_price_per_kg, 3),
                 'stock_value' => round($value, 3),
-                'profit_margin' => round($product->getProfitMarginPercentage(), 2),
+                'profit_margin' => round($profitMargin, 2),
             ];
         }
 
@@ -317,7 +363,12 @@ class ReportService
         $totalRevenue = $invoices->sum('total');
         $totalPaid = $invoices->sum('amount_paid');
         $totalPending = $invoices->sum('remaining_balance');
-        $totalProfit = $invoices->map(fn($inv) => $this->invoiceService->calculateProfit($inv))->sum();
+        $totalProfit = $invoices->sum(function ($inv) {
+            return $inv->gross_profit ?? $inv->items->sum(function ($item) {
+                $costPrice = $item->cost_price_per_kg ?? ($item->product->purchase_price_per_kg ?? 0);
+                return ($item->unit_price - $costPrice) * $item->quantity_kg;
+            });
+        });
         $totalExpenses = $expenses->sum('amount');
 
         return [
@@ -377,7 +428,12 @@ class ReportService
                 ->get();
 
             $totalRevenue = $invoices->sum('total');
-            $totalProfit = $invoices->map(fn($inv) => $this->invoiceService->calculateProfit($inv))->sum();
+            $totalProfit = $invoices->sum(function ($inv) {
+                return $inv->gross_profit ?? $inv->items->sum(function ($item) {
+                    $costPrice = $item->cost_price_per_kg ?? ($item->product->purchase_price_per_kg ?? 0);
+                    return ($item->unit_price - $costPrice) * $item->quantity_kg;
+                });
+            });
 
             $trend[] = [
                 'month' => $monthStr,

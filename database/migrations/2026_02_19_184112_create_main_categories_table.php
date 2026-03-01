@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('main_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Coffee, Herbs
-            $table->string('name_ar')->unique(); // بن, عطارة
+            $table->string('name')->nullable()->unique(); // Coffee, Herbs
+            $table->string('name_ar')->nullable()->unique(); // بن, عطارة
             $table->text('description')->nullable();
             $table->string('description_ar')->nullable();
             $table->timestamps();

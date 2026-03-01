@@ -26,8 +26,8 @@ class ReportExportController extends Controller
     public function exportPdf(Request $request, string $type)
     {
         try {
-            $fromDate = $request->input('from_date', now()->startOfMonth()->toDateString());
-            $toDate = $request->input('to_date', now()->toDateString());
+            $fromDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+            $toDate = $request->input('end_date', now()->toDateString());
 
             switch ($type) {
                 case 'sales':
@@ -70,8 +70,8 @@ class ReportExportController extends Controller
     public function exportExcel(Request $request, string $type)
     {
         try {
-            $fromDate = $request->input('from_date', now()->startOfMonth()->toDateString());
-            $toDate = $request->input('to_date', now()->toDateString());
+            $fromDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+            $toDate = $request->input('end_date', now()->toDateString());
 
             switch ($type) {
                 case 'sales':

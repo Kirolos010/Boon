@@ -30,9 +30,10 @@ class ExpenseController extends Controller
         try {
             $validated = $request->validate([
                 'expense_category_id' => 'required|exists:expense_categories,id',
-                'description' => 'required|string|max:500',
+                'description' => 'required|string|max:1000',
                 'amount' => 'required|numeric|min:0.01',
                 'expense_date' => 'required|date',
+                'reference' => 'nullable|string|max:100',
                 'notes' => 'nullable|string|max:1000',
             ]);
 
@@ -40,7 +41,7 @@ class ExpenseController extends Controller
             $expense = Expense::create($validated);
 
             return redirect()->route('expenses.index')
-                ->with('success', 'تم تسجيل مبلغ نفقة بنجاح');
+                ->with('success', 'تم تسجيل النفقة بنجاح');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
@@ -74,9 +75,10 @@ class ExpenseController extends Controller
             $expense = Expense::findOrFail($id);
             $validated = $request->validate([
                 'expense_category_id' => 'required|exists:expense_categories,id',
-                'description' => 'required|string|max:500',
+                'description' => 'required|string|max:1000',
                 'amount' => 'required|numeric|min:0.01',
                 'expense_date' => 'required|date',
+                'reference' => 'nullable|string|max:100',
                 'notes' => 'nullable|string|max:1000',
             ]);
 

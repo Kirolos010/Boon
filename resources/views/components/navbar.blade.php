@@ -10,7 +10,7 @@
             <input type="text" class="form-control" placeholder="بحث..." style="width: 250px; border-radius: 20px;">
         </div>
 
-        <!-- Notifications -->
+        {{-- <!-- Notifications -->
         <div style="position: relative;">
             <a href="#" data-bs-toggle="dropdown" style="font-size: 20px; color: var(--coffee-dark); text-decoration: none;">
                 <i class="fas fa-bell"></i>
@@ -28,7 +28,7 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-center" href="#">عرض جميع الإشعارات</a></li>
             </ul>
-        </div>
+        </div> --}}
 
         <!-- User Profile -->
         <div class="user-profile" data-bs-toggle="dropdown">
@@ -43,15 +43,15 @@
 
         <!-- User Dropdown Menu -->
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">
+            <li><a class="dropdown-item" href="{{ route('profile.show') }}">
                 <i class="fas fa-user"></i> الملف الشخصي
             </a></li>
-            <li><a class="dropdown-item" href="#">
+            <li><a class="dropdown-item" href="{{ route('profile.change-password') }}">
                 <i class="fas fa-key"></i> تغيير كلمة السر
             </a></li>
-            <li><a class="dropdown-item" href="#">
+            {{-- <li><a class="dropdown-item" href="#">
                 <i class="fas fa-bell"></i> الإشعارات
-            </a></li>
+            </a></li> --}}
             <li><hr class="dropdown-divider"></li>
             <li>
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">

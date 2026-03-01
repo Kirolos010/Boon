@@ -14,12 +14,16 @@ class InvoiceItem extends Model
         'quantity_kg',
         'unit_price',
         'total',
+        'cost_price_per_kg',
+        'item_profit',
     ];
 
     protected $casts = [
         'quantity_kg' => 'decimal:3',
         'unit_price' => 'decimal:3',
         'total' => 'decimal:3',
+        'cost_price_per_kg' => 'decimal:3',
+        'item_profit' => 'decimal:3',
     ];
 
     /**

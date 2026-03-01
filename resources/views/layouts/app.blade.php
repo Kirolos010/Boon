@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title') - نظام إدارة المبيعات</title>
+    <title>@yield('title') - الغالى ✨</title>
 
     <!-- Bootstrap 5.3 RTL -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
@@ -133,7 +133,9 @@
         .sidebar-menu .submenu.show {
             display: block;
             opacity: 1;
-            max-height: 500px;
+            max-height: 1000px;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
         .sidebar-menu .menu-toggle {
@@ -579,26 +581,55 @@
         }
 
         /* Pagination */
+        nav[aria-label="Page navigation"] {
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
         .pagination {
-            margin-top: 20px;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .page-item {
+            margin: 0 2px;
         }
 
         .page-link {
             color: var(--coffee-medium);
             border: 1px solid var(--cream-medium);
-            border-radius: 5px;
-            margin: 0 2px;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: white;
+            min-width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
-        .page-link:hover {
-            background-color: var(--cream-medium);
-            border-color: var(--coffee-medium);
-            color: var(--coffee-dark);
-        }
-
-        .page-link.active {
+        .page-link:hover:not(.disabled) {
             background-color: var(--coffee-dark);
             border-color: var(--coffee-dark);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--coffee-dark);
+            border-color: var(--coffee-dark);
+            color: white;
+        }
+
+        .page-item.disabled .page-link {
+            color: var(--cream-dark);
+            background-color: var(--cream-light);
+            border-color: var(--cream-medium);
+            cursor: not-allowed;
         }
 
         /* Search & Filter */
@@ -684,17 +715,30 @@
     <script>
         // Sidebar toggle - فقط للـ menu-toggle items
         document.querySelectorAll('.sidebar-menu .menu-toggle').forEach(link => {
+            // Set initial rotation if submenu is open
+            const submenu = link.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu') && submenu.classList.contains('show')) {
+                const arrow = link.querySelector('.fa-chevron-left');
+                if (arrow) arrow.style.transform = 'rotate(-90deg)';
+            }
+
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const submenu = this.nextElementSibling;
+                const arrow = this.querySelector('.fa-chevron-left');
+
                 if (submenu && submenu.classList.contains('submenu')) {
-                    // إغلاق جميع الـ submenus الأخرى
-                    document.querySelectorAll('.sidebar-menu > li > .submenu').forEach(menu => {
-                        if (menu !== submenu) {
-                            menu.classList.remove('show');
-                        }
-                    });
+                    // Toggle current submenu
                     submenu.classList.toggle('show');
+
+                    // Rotate arrow
+                    if (arrow) {
+                        if (submenu.classList.contains('show')) {
+                            arrow.style.transform = 'rotate(-90deg)';
+                        } else {
+                            arrow.style.transform = 'rotate(0deg)';
+                        }
+                    }
                 }
             });
         });

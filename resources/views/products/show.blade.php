@@ -75,13 +75,13 @@
                     <div class="col-md-6">
                         <div class="product-info-item">
                             <label>سعر الشراء (لكل كج)</label>
-                            <p class="text-primary font-weight-bold">{{ number_format($product->purchase_price_per_kg, 2) }} ر.س</p>
+                            <p class="text-primary font-weight-bold">{{ number_format($product->purchase_price_per_kg, 2) }} ج.م</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="product-info-item">
                             <label>سعر البيع (لكل كج)</label>
-                            <p class="text-success font-weight-bold">{{ number_format($product->selling_price_per_kg, 2) }} ر.س</p>
+                            <p class="text-success font-weight-bold">{{ number_format($product->selling_price_per_kg, 2) }} ج.م</p>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                     <div class="col-md-12">
                         <div class="product-info-item">
                             <label>الربح لكل كج</label>
-                            <p class="text-info font-weight-bold">{{ number_format($product->selling_price_per_kg - $product->purchase_price_per_kg, 2) }} ر.س</p>
+                            <p class="text-info font-weight-bold">{{ number_format($product->selling_price_per_kg - $product->purchase_price_per_kg, 2) }} ج.م</p>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
 
         <!-- Sidebar -->
         <div class="col-md-4">
-            <!-- Supplier Information -->
+            {{-- <!-- Supplier Information -->
             @if($product->supplier)
                 <x-card>
                     @slot('header')
@@ -214,7 +214,7 @@
                         <p><i class="fas fa-envelope"></i> {{ $product->supplier->email }}</p>
                     @endif
                 </x-card>
-            @endif
+            @endif --}}
 
             <!-- Statistics -->
             <x-card>

@@ -35,22 +35,24 @@ class InvoiceService
                 $invoiceNumber = $this->generateInvoiceNumber();
 
                 // Calculate totals
-                $totals = $this->calculateInvoiceTotals($data['items']);
+                $totals = $this->calculateInvoiceTotals($data['items'], $data['discount'] ?? 0);
 
                 // Create invoice
                 $invoice = Invoice::create([
                     'invoice_number' => $invoiceNumber,
                     'type' => $data['type'] ?? Invoice::TYPE_REGULAR,
                     'client_id' => $data['client_id'] ?? null,
+                    'customer_name' => $data['customer_name'] ?? null,
                     'user_id' => Auth::id(),
                     'subtotal' => $totals['subtotal'],
                     'discount' => $data['discount'] ?? 0,
                     'tax' => $totals['tax'],
                     'total' => $totals['total'],
-                    'amount_paid' => $data['amount_paid'] ?? 0,
-                    'remaining_balance' => max(0, $totals['total'] - ($data['amount_paid'] ?? 0)),
-                    'status' => $this->calculateStatus($totals['total'], $data['amount_paid'] ?? 0),
-                    'invoice_date' => $data['invoice_date'] ?? now()->toDateString(),
+                    'amount_paid' => 0, // Initialize as 0, will be set by recordPayment if needed
+                    'remaining_balance' => $totals['total'],
+                    'status' => Invoice::STATUS_UNPAID,
+                    'payment_method' => $data['payment_method'] ?? null,
+                    'invoice_date' => $data['invoice_date'] ?? now(),
                     'notes' => $data['notes'] ?? null,
                 ]);
 
@@ -59,14 +61,35 @@ class InvoiceService
                     $this->createInvoiceItem($invoice, $item);
                 }
 
+                // Calculate and store invoice-level profit snapshot
+                $invoice->load('items');
+                $totalCost = $invoice->items->sum(function ($item) {
+                    return $item->cost_price_per_kg * $item->quantity_kg;
+                });
+                $grossProfit = $invoice->items->sum('item_profit');
+
+                $invoice->update([
+                    'total_cost' => round($totalCost, 3),
+                    'gross_profit' => round($grossProfit, 3),
+                ]);
+
                 // Update client debt if client exists
                 if ($invoice->client_id) {
                     $this->updateClientDebt($invoice->client, $invoice->remaining_balance);
                 }
 
                 // Record payment if amount paid > 0
-                if (($data['amount_paid'] ?? 0) > 0) {
-                    $this->recordPayment($invoice, $data['amount_paid'], $data['payment_method'] ?? 'cash');
+                $amountPaid = (float) ($data['amount_paid'] ?? 0);
+                if ($amountPaid > 0) {
+                    // Ensure amount paid doesn't exceed total
+                    $amountPaid = min($amountPaid, $invoice->total);
+                    $this->recordPayment(
+                        $invoice,
+                        $amountPaid,
+                        $data['payment_method'] ?? 'cash',
+                        $data['payment_date'] ?? null,
+                        $data['notes'] ?? null
+                    );
                 }
 
                 return $invoice;
@@ -92,6 +115,11 @@ class InvoiceService
         $unitPrice = $itemData['unit_price'] ?? $product->selling_price_per_kg;
         $itemTotal = $itemData['quantity_kg'] * $unitPrice;
 
+        // Get cost price at time of purchase
+        $costPrice = $product->purchase_price_per_kg;
+        // Calculate profit for this item
+        $itemProfit = ($unitPrice - $costPrice) * $itemData['quantity_kg'];
+
         // Create invoice item
         $item = InvoiceItem::create([
             'invoice_id' => $invoice->id,
@@ -99,6 +127,8 @@ class InvoiceService
             'quantity_kg' => $itemData['quantity_kg'],
             'unit_price' => $unitPrice,
             'total' => $itemTotal,
+            'cost_price_per_kg' => $costPrice,
+            'item_profit' => $itemProfit,
         ]);
 
         // Deduct from product stock
@@ -126,10 +156,22 @@ class InvoiceService
     public function recordPayment(Invoice $invoice, float $amount, string $method = 'cash', ?string $paymentDate = null, ?string $notes = null): InvoicePayment
     {
         return DB::transaction(function () use ($invoice, $amount, $method, $paymentDate, $notes) {
-            // Create payment record
+            // Validate and sanitize amount
+            $amount = (float) $amount;
+            if ($amount <= 0) {
+                throw new Exception('المبلغ المدفوع يجب أن يكون أكبر من صفر');
+            }
+
+            // Ensure amount paid doesn't exceed remaining balance
+            $remainingBalance = max(0, ($invoice->total - $invoice->amount_paid));
+            if ($amount > $remainingBalance) {
+                throw new Exception('المبلغ المدفوع لا يمكن أن يتجاوز المبلغ المتبقي: ' . $remainingBalance);
+            }
+
+            // Create payment record with sanitized amount
             $payment = InvoicePayment::create([
                 'invoice_id' => $invoice->id,
-                'amount' => $amount,
+                'amount' => round($amount, 3),
                 'payment_date' => $paymentDate ? Carbon::parse($paymentDate)->toDateString() : now()->toDateString(),
                 'payment_method' => $method,
                 'notes' => $notes,
@@ -137,13 +179,13 @@ class InvoiceService
             ]);
 
             // Update invoice amounts
-            $newAmountPaid = $invoice->amount_paid + $amount;
-            $newBalance = max(0, $invoice->total - $newAmountPaid);
+            $newAmountPaid = (float) $invoice->amount_paid + (float) $amount;
+            $newBalance = max(0, (float) $invoice->total - (float) $newAmountPaid);
 
             $invoice->update([
-                'amount_paid' => $newAmountPaid,
-                'remaining_balance' => $newBalance,
-                'status' => $this->calculateStatus($invoice->total, $newAmountPaid),
+                'amount_paid' => round($newAmountPaid, 3),
+                'remaining_balance' => round($newBalance, 3),
+                'status' => $this->calculateStatus((float) $invoice->total, (float) $newAmountPaid),
             ]);
 
             // Update client debt
@@ -158,12 +200,21 @@ class InvoiceService
     /**
      * Calculate invoice profit
      */
-    public function calculateProfit(Invoice $invoice): float
+    public function calculateProfit($invoice): float
     {
+        if (!$invoice) {
+            return 0;
+        }
+
+        if (!is_null($invoice->gross_profit)) {
+            return round((float) $invoice->gross_profit, 3);
+        }
+
+        $invoice->loadMissing('items.product');
         $profit = 0;
 
         foreach ($invoice->items as $item) {
-            $costPrice = $item->product->purchase_price_per_kg;
+            $costPrice = $item->cost_price_per_kg ?? $item->product->purchase_price_per_kg;
             $sellingPrice = $item->unit_price;
             $profit += ($sellingPrice - $costPrice) * $item->quantity_kg;
         }
@@ -198,13 +249,20 @@ class InvoiceService
                 }
 
                 // Recalculate totals
-                $totals = $this->calculateInvoiceTotals($data['items']);
+                $totals = $this->calculateInvoiceTotals($data['items'], $data['discount'] ?? $invoice->discount);
+                $invoice->load('items');
+                $totalCost = $invoice->items->sum(function ($item) {
+                    return $item->cost_price_per_kg * $item->quantity_kg;
+                });
+                $grossProfit = $invoice->items->sum('item_profit');
 
                 $invoice->update([
                     'subtotal' => $totals['subtotal'],
                     'discount' => $data['discount'] ?? $invoice->discount,
                     'tax' => $totals['tax'],
                     'total' => $totals['total'],
+                    'total_cost' => round($totalCost, 3),
+                    'gross_profit' => round($grossProfit, 3),
                     'remaining_balance' => max(0, $totals['total'] - $invoice->amount_paid),
                     'status' => $this->calculateStatus($totals['total'], $invoice->amount_paid),
                 ]);
@@ -222,7 +280,7 @@ class InvoiceService
         // Quick sales don't have client, are always paid, and marked as quick type
         $data['type'] = Invoice::TYPE_QUICK;
         $data['client_id'] = null;
-        $data['amount_paid'] = $this->calculateInvoiceTotals($data['items'])['total'];
+        $data['amount_paid'] = $this->calculateInvoiceTotals($data['items'], $data['discount'] ?? 0)['total'];
         $data['payment_method'] = $data['payment_method'] ?? 'cash';
 
         return $this->createInvoice($data);
@@ -231,7 +289,7 @@ class InvoiceService
     /**
      * Calculate totals for invoice items
      */
-    private function calculateInvoiceTotals(array $items): array
+    private function calculateInvoiceTotals(array $items, float $discount = 0): array
     {
         $subtotal = 0;
 
@@ -241,9 +299,14 @@ class InvoiceService
             $subtotal += $item['quantity_kg'] * $unitPrice;
         }
 
-        // For now, tax is 0, can be customized
-        $tax = 0;
-        $total = $subtotal + $tax;
+        // Calculate totals (Tax disabled - commented out)
+        $afterDiscount = $subtotal - $discount;
+        // $tax = $afterDiscount * 0.15;
+        // $total = $afterDiscount + $tax;
+
+        // Using afterDiscount as total without tax
+        $tax = 0; // Tax disabled
+        $total = $afterDiscount;
 
         return [
             'subtotal' => round($subtotal, 3),
@@ -258,8 +321,22 @@ class InvoiceService
     private function generateInvoiceNumber(): string
     {
         $date = now()->format('Ymd');
-        $count = Invoice::whereDate('created_at', now())->count() + 1;
-        return 'INV-' . $date . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+        $prefix = 'INV-' . $date . '-';
+
+        // Find the highest number for today
+        $lastInvoice = Invoice::where('invoice_number', 'like', $prefix . '%')
+            ->orderBy('invoice_number', 'desc')
+            ->first();
+
+        if ($lastInvoice) {
+            // Extract the number from the last invoice
+            $lastNumber = (int) substr($lastInvoice->invoice_number, strlen($prefix));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        return $prefix . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**

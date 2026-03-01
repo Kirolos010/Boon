@@ -161,23 +161,23 @@
         <div class="summary-box">
             <div class="summary-row">
                 <span class="summary-label">إجمالي الإيرادات:</span>
-                <span class="summary-value">{{ number_format($data['revenue_total'] ?? 0, 2) }} ر.س</span>
+                <span class="summary-value">{{ number_format($data['revenue_total'] ?? 0, 2) }} ج.م</span>
             </div>
             <div class="summary-row">
                 <span class="summary-label">إجمالي التكاليف:</span>
-                <span class="summary-value">{{ number_format($data['total_cost'] ?? 0, 2) }} ر.س</span>
+                <span class="summary-value">{{ number_format($data['total_cost'] ?? 0, 2) }} ج.م</span>
             </div>
             <div class="summary-row">
                 <span class="summary-label">إجمالي الأرباح (قبل المصروفات):</span>
-                <span class="summary-value">{{ number_format($data['total_profit'] ?? 0, 2) }} ر.س</span>
+                <span class="summary-value">{{ number_format($data['total_profit'] ?? 0, 2) }} ج.م</span>
             </div>
             <div class="summary-row">
                 <span class="summary-label">إجمالي المصروفات:</span>
-                <span class="summary-value">{{ number_format($data['expenses_total'] ?? 0, 2) }} ر.س</span>
+                <span class="summary-value">{{ number_format($data['expenses_total'] ?? 0, 2) }} ج.م</span>
             </div>
             <div class="summary-row" style="background-color: #fff; margin-top: 10px; padding-top: 10px; border-top: 2px solid #2C1810;">
                 <span class="summary-label" style="font-size: 14px;">صافي الربح النهائي:</span>
-                <span class="summary-value" style="font-size: 14px; color: #27ae60;">{{ number_format(($data['net_profit'] ?? 0), 2) }} ر.س</span>
+                <span class="summary-value" style="font-size: 14px; color: #27ae60;">{{ number_format(($data['net_profit'] ?? 0), 2) }} ج.م</span>
             </div>
         </div>
     </div>
@@ -200,9 +200,9 @@
                     @foreach($data['sales_breakdown'] as $sale)
                         <tr>
                             <td>{{ $sale['type'] === 'invoices' ? 'فواتير عادية' : 'مبيعات سريعة' }}</td>
-                            <td class="number">{{ number_format($sale['revenue'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($sale['cost'] ?? 0, 2) }} ر.س</td>
-                            <td class="number">{{ number_format($sale['profit'] ?? 0, 2) }} ر.س</td>
+                            <td class="number">{{ number_format($sale['revenue'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($sale['cost'] ?? 0, 2) }} ج.م</td>
+                            <td class="number">{{ number_format($sale['profit'] ?? 0, 2) }} ج.م</td>
                             <td class="number">{{ number_format((($sale['revenue'] ?? 0) > 0 ? (($sale['profit'] ?? 0) / ($sale['revenue'] ?? 0) * 100) : 0), 1) }}%</td>
                         </tr>
                     @endforeach
@@ -227,7 +227,7 @@
                     @foreach($data['expenses_by_category'] as $expense)
                         <tr>
                             <td>{{ $expense['category_name'] ?? $expense['category'] ?? '' }}</td>
-                            <td class="number">{{ number_format($expense['total'] ?? 0, 2) }} ر.س</td>
+                            <td class="number">{{ number_format($expense['total'] ?? 0, 2) }} ج.م</td>
                             <td class="number">{{ number_format((($expense['total'] ?? 0) / (($data['expenses_total'] ?? 1)) * 100), 1) }}%</td>
                         </tr>
                     @endforeach

@@ -199,19 +199,19 @@
     <div class="summary">
         <div class="summary-item">
             <label>إجمالي الإيرادات</label>
-            <div class="value">{{ number_format($data['revenue_total'] ?? 0, 2) }} ر.س</div>
+            <div class="value">{{ number_format($data['revenue_total'] ?? 0, 2) }} ج.م</div>
         </div>
         <div class="summary-item">
             <label>إجمالي الأرباح</label>
-            <div class="value">{{ number_format($data['profit_total'] ?? 0, 2) }} ر.س</div>
+            <div class="value">{{ number_format($data['profit_total'] ?? 0, 2) }} ج.م</div>
         </div>
         <div class="summary-item">
             <label>إجمالي المصروفات</label>
-            <div class="value">{{ number_format($data['expenses_total'] ?? 0, 2) }} ر.س</div>
+            <div class="value">{{ number_format($data['expenses_total'] ?? 0, 2) }} ج.م</div>
         </div>
         <div class="summary-item">
             <label>صافي الربح</label>
-            <div class="value" style="color: #27ae60;">{{ number_format($data['net_profit'] ?? 0, 2) }} ر.س</div>
+            <div class="value" style="color: #27ae60;">{{ number_format($data['net_profit'] ?? 0, 2) }} ج.م</div>
         </div>
     </div>
 
@@ -227,15 +227,15 @@
                 </div>
                 <div class="card-row">
                     <span class="card-label">الإيرادات:</span>
-                    <span class="card-value">{{ number_format($data['invoices_revenue'] ?? 0, 2) }} ر.س</span>
+                    <span class="card-value">{{ number_format($data['invoices_revenue'] ?? 0, 2) }} ج.م</span>
                 </div>
                 <div class="card-row">
                     <span class="card-label">التكلفة:</span>
-                    <span class="card-value">{{ number_format($data['invoices_cost'] ?? 0, 2) }} ر.س</span>
+                    <span class="card-value">{{ number_format($data['invoices_cost'] ?? 0, 2) }} ج.م</span>
                 </div>
                 <div class="card-row" style="border-bottom: 2px solid #2C1810; padding-bottom: 5px;">
                     <span class="card-label">الربح:</span>
-                    <span class="card-value" style="color: #27ae60;">{{ number_format($data['invoices_profit'] ?? 0, 2) }} ر.س</span>
+                    <span class="card-value" style="color: #27ae60;">{{ number_format($data['invoices_profit'] ?? 0, 2) }} ج.م</span>
                 </div>
             </div>
 
@@ -247,15 +247,15 @@
                 </div>
                 <div class="card-row">
                     <span class="card-label">الإيرادات:</span>
-                    <span class="card-value">{{ number_format($data['quick_sales_revenue'] ?? 0, 2) }} ر.س</span>
+                    <span class="card-value">{{ number_format($data['quick_sales_revenue'] ?? 0, 2) }} ج.م</span>
                 </div>
                 <div class="card-row">
                     <span class="card-label">التكلفة:</span>
-                    <span class="card-value">{{ number_format($data['quick_sales_cost'] ?? 0, 2) }} ر.س</span>
+                    <span class="card-value">{{ number_format($data['quick_sales_cost'] ?? 0, 2) }} ج.م</span>
                 </div>
                 <div class="card-row" style="border-bottom: 2px solid #2C1810; padding-bottom: 5px;">
                     <span class="card-label">الربح:</span>
-                    <span class="card-value" style="color: #27ae60;">{{ number_format($data['quick_sales_profit'] ?? 0, 2) }} ر.س</span>
+                    <span class="card-value" style="color: #27ae60;">{{ number_format($data['quick_sales_profit'] ?? 0, 2) }} ج.م</span>
                 </div>
             </div>
         </div>
@@ -277,7 +277,7 @@
                     @foreach($data['expenses_by_category'] as $category)
                         <tr>
                             <td>{{ $category['category_name'] ?? $category['category'] ?? '' }}</td>
-                            <td class="number">{{ number_format($category['total'] ?? 0, 2) }} ر.س</td>
+                            <td class="number">{{ number_format($category['total'] ?? 0, 2) }} ج.م</td>
                             <td class="number">{{ number_format((($category['total'] ?? 0) / (($data['expenses_total'] ?? 1)) * 100), 1) }}%</td>
                         </tr>
                     @endforeach
@@ -292,19 +292,19 @@
         <table>
             <tr>
                 <td style="font-weight: bold;">إجمالي الإيرادات</td>
-                <td class="number" style="font-weight: bold; color: #27ae60;">+ {{ number_format($data['revenue_total'] ?? 0, 2) }} ر.س</td>
+                <td class="number" style="font-weight: bold; color: #27ae60;">+ {{ number_format($data['revenue_total'] ?? 0, 2) }} ج.م</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">التكلفة الإجمالية</td>
-                <td class="number" style="font-weight: bold; color: #e74c3c;">- {{ number_format($data['total_cost'] ?? 0, 2) }} ر.س</td>
+                <td class="number" style="font-weight: bold; color: #e74c3c;">- {{ number_format($data['total_cost'] ?? 0, 2) }} ج.م</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">المصروفات</td>
-                <td class="number" style="font-weight: bold; color: #e74c3c;">- {{ number_format($data['expenses_total'] ?? 0, 2) }} ر.س</td>
+                <td class="number" style="font-weight: bold; color: #e74c3c;">- {{ number_format($data['expenses_total'] ?? 0, 2) }} ج.م</td>
             </tr>
         </table>
         <div class="total-box">
-            صافي الربح النهائي: {{ number_format($data['net_profit'] ?? 0, 2) }} ر.س
+            صافي الربح النهائي: {{ number_format($data['net_profit'] ?? 0, 2) }} ج.م
         </div>
     </div>
 
@@ -315,15 +315,15 @@
             <div class="payment-summary">
                 <div class="payment-item">
                     <label>المدفوع نقداً</label>
-                    <div class="value">{{ number_format($data['payment_status']['cash'] ?? 0, 2) }} ر.س</div>
+                    <div class="value">{{ number_format($data['payment_status']['cash'] ?? 0, 2) }} ج.م</div>
                 </div>
                 <div class="payment-item">
                     <label>الشيكات</label>
-                    <div class="value">{{ number_format($data['payment_status']['check'] ?? 0, 2) }} ر.س</div>
+                    <div class="value">{{ number_format($data['payment_status']['check'] ?? 0, 2) }} ج.م</div>
                 </div>
                 <div class="payment-item">
                     <label>على الحساب</label>
-                    <div class="value">{{ number_format($data['payment_status']['credit'] ?? 0, 2) }} ر.س</div>
+                    <div class="value">{{ number_format($data['payment_status']['credit'] ?? 0, 2) }} ج.م</div>
                 </div>
             </div>
         </div>
@@ -347,7 +347,7 @@
             </tr>
             <tr>
                 <td>متوسط سعر الفاتورة</td>
-                <td class="number">{{ number_format(($data['invoices_count'] > 0 ? ($data['invoices_revenue'] / $data['invoices_count']) : 0), 2) }} ر.س</td>
+                <td class="number">{{ number_format(($data['invoices_count'] > 0 ? ($data['invoices_revenue'] / $data['invoices_count']) : 0), 2) }} ج.م</td>
             </tr>
         </table>
     </div>
