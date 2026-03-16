@@ -11,6 +11,12 @@
             <p class="page-title-subtitle">إليك ملخص أنشطة اليوم وأداء الأعمال</p>
         </div>
         <div class="page-actions">
+            <form action="{{ route('dashboard.backup.database') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn btn-warning text-dark">
+                    <i class="fas fa-cloud-upload-alt"></i> رفع النسخة الاحتياطية
+                </button>
+            </form>
             <a href="{{ route('invoices.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> فاتورة جديدة
             </a>
@@ -19,6 +25,14 @@
             </a>
         </div>
     </div>
+
+    @if(session('success'))
+        <x-alert message="{{ session('success') }}" type="success" icon="check-circle" />
+    @endif
+
+    @if($errors->has('backup'))
+        <x-alert message="{{ $errors->first('backup') }}" type="danger" icon="times-circle" />
+    @endif
 
     <!-- Statistics Row -->
     <div class="row g-3 mb-4">
@@ -187,7 +201,7 @@
         </div>
     @endif
 
-    @if($stats['pending_purchases'] ?? 0 > 0)
+    @if(($stats['pending_purchases'] ?? 0) > 0)
         <div class="mt-2">
             <x-alert message="هناك {{ $stats['pending_purchases'] }} طلب شراء منتظر الاستلام" type="info" icon="info-circle" />
         </div>

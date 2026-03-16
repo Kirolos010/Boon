@@ -27,6 +27,7 @@ require __DIR__.'/auth.php';
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/database-backup', [DashboardController::class, 'runDatabaseBackup'])->name('dashboard.backup.database');
 
     // User Profile
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.show');
