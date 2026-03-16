@@ -31,6 +31,32 @@
         <x-alert message="{{ session('error') }}" type="danger" icon="exclamation-circle" />
     @endif
 
+    <!-- Search & Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('settings.categories.index') }}" class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" name="search" class="form-control" placeholder="بحث باسم الفئة..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="type" class="form-select">
+                        <option value="">-- كل الفئات --</option>
+                        <option value="with_subcategories" {{ request('type') == 'with_subcategories' ? 'selected' : '' }}>لها فئات فرعية</option>
+                        <option value="without_subcategories" {{ request('type') == 'without_subcategories' ? 'selected' : '' }}>بدون فئات فرعية</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                    <a href="{{ route('settings.categories.index') }}" class="btn btn-outline-secondary flex-fill">
+                        <i class="fas fa-rotate-left"></i> إعادة
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Categories Table -->
     <x-card>
         <div class="table-responsive">

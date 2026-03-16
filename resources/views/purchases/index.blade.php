@@ -67,6 +67,11 @@
                         <i class="fas fa-search"></i> بحث
                     </button>
                 </div>
+                <div class="col-md-2">
+                    <a href="{{ route('purchases.index') }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-rotate-left"></i> إعادة تعيين
+                    </a>
+                </div>
             </form>
         </div>
     </div>

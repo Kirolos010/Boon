@@ -285,7 +285,7 @@
             <i class="fas fa-arrow-right"></i> العودة
         </a>
         <div class="d-flex gap-2">
-            <button onclick="window.print()" class="btn btn-info">
+            <button onclick="printInvoiceDocument()" class="btn btn-info">
                 <i class="fas fa-print"></i> طباعة
             </button>
             <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-primary">
@@ -397,7 +397,16 @@
 
     <script>
         const remainingBalanceShow = {{ $invoice->remaining_balance }};
+        const originalDocumentTitle = document.title;
+        const printDocumentTitle = @json(($invoice->client->name_ar ?? 'عميل') . ' - ' . $invoice->invoice_number);
         let paymentModalInstanceShow = null;
+
+        function printInvoiceDocument() {
+            document.title = printDocumentTitle;
+            setTimeout(function () {
+                window.print();
+            }, 50);
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             const modalElement = document.getElementById('paymentModal');
@@ -495,9 +504,13 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('print') === '1') {
                 setTimeout(function() {
-                    window.print();
+                    printInvoiceDocument();
                 }, 1000);
             }
+        });
+
+        window.addEventListener('afterprint', function() {
+            document.title = originalDocumentTitle;
         });
     </script>
 @endsection

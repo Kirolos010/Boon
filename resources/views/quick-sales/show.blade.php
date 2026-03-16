@@ -178,7 +178,7 @@
                 <i class="fas fa-arrow-right"></i> العودة
             </a>
             <div class="d-flex gap-2">
-                <button onclick="window.print()" class="btn btn-info">
+                <button id="printQuickSaleBtn" type="button" class="btn btn-info">
                     <i class="fas fa-print"></i> طباعة
                 </button>
             </div>
@@ -215,18 +215,33 @@
             display: none;
         }
     </style>
-@endsection
 
-@section('scripts')
     <script>
-        // Auto print when print parameter is present
+        const originalDocumentTitle = document.title;
+        const printDocumentTitle = @json(($sale->customer_name ?: 'عميل نقدي') . ' - ' . $sale->invoice_number);
+
+        function printQuickSaleDocument() {
+            document.title = printDocumentTitle;
+            window.print();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            const printButton = document.getElementById('printQuickSaleBtn');
+            if (printButton) {
+                printButton.addEventListener('click', printQuickSaleDocument);
+            }
+
+            // Auto print when print parameter is present
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('print') === '1') {
                 setTimeout(function() {
-                    window.print();
-                }, 1000);
+                    printQuickSaleDocument();
+                }, 300);
             }
+        });
+
+        window.addEventListener('afterprint', function() {
+            document.title = originalDocumentTitle;
         });
     </script>
 @endsection

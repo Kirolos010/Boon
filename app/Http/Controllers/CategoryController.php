@@ -10,10 +10,37 @@ use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $mainCategories = MainCategory::with('subCategories')->paginate(15);
-        return view('settings.categories.index', compact('mainCategories'));
+        try {
+            $mainCategories = MainCategory::with('subCategories')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name_ar', 'like', "%{$search}%")
+                            ->orWhere('name', 'like', "%{$search}%");
+                    });
+                })
+                ->when($request->filled('type'), function ($query) use ($request) {
+                    $type = (string) $request->input('type');
+
+                    if ($type === 'with_subcategories') {
+                        $query->has('subCategories');
+                    }
+
+                    if ($type === 'without_subcategories') {
+                        $query->doesntHave('subCategories');
+                    }
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('settings.categories.index', compact('mainCategories'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function create()

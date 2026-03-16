@@ -17,10 +17,32 @@ class PurchaseController extends Controller
 
     public function index(Request $request)
     {
-        $purchases = Purchase::with('supplier', 'items')
-            ->paginate(15);
+        try {
+            $purchases = Purchase::with('supplier', 'items')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
 
-        return view('purchases.index', ['purchases' => $purchases]);
+                    $query->where(function ($q) use ($search) {
+                        $q->where('purchase_number', 'like', "%{$search}%")
+                            ->orWhereHas('supplier', function ($supplierQuery) use ($search) {
+                                $supplierQuery->where('name', 'like', "%{$search}%")
+                                    ->orWhere('name_ar', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%")
+                                    ->orWhere('phone', 'like', "%{$search}%");
+                            });
+                    });
+                })
+                ->when($request->filled('status'), function ($query) use ($request) {
+                    $query->where('status', $request->input('status'));
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('purchases.index', ['purchases' => $purchases]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function create()

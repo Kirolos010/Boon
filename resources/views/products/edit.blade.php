@@ -149,20 +149,16 @@
                     <i class="fas fa-info-circle"></i> معلومات المنتج
                 @endslot
 
-                <p><strong>الفئة:</strong> {{ $product->subCategory->name_ar ?? 'N/A' }}</p>
+                <p><strong>الفئة:</strong> <span id="summaryCategory">{{ $product->subCategory->name_ar ?? 'N/A' }}</span></p>
                 <p><strong>الكود:</strong> <code>{{ $product->sku }}</code></p>
-                <p><strong>الكمية:</strong> {{ $product->current_stock_kg }} كج</p>
+                <p><strong>الكمية:</strong> <span id="summaryQuantity">{{ number_format((float) $product->current_stock_kg, 3) }}</span> كج</p>
                 <p><strong>الحالة:</strong>
-                    @if($product->current_stock_kg > $product->minimum_stock_alert)
-                        <span class="badge badge-success">متوفر</span>
-                    @elseif($product->current_stock_kg > 0)
-                        <span class="badge badge-warning">حد أدنى</span>
-                    @else
-                        <span class="badge badge-danger">نفد</span>
-                    @endif
+                    <span id="summaryStatus" class="badge {{ $product->current_stock_kg > $product->minimum_stock_alert ? 'badge-success' : ($product->current_stock_kg > 0 ? 'badge-warning' : 'badge-danger') }}">
+                        {{ $product->current_stock_kg > $product->minimum_stock_alert ? 'متوفر' : ($product->current_stock_kg > 0 ? 'حد أدنى' : 'نفد') }}
+                    </span>
                 </p>
                 <p><strong>الربح حسب الكج:</strong>
-                    {{ number_format($product->selling_price_per_kg - $product->purchase_price_per_kg, 2) }} ج.م
+                    <span id="summaryProfit">{{ number_format($product->selling_price_per_kg - $product->purchase_price_per_kg, 2) }}</span> ج.م
                 </p>
             </x-card>
 
@@ -196,6 +192,57 @@
         document.addEventListener('DOMContentLoaded', function() {
             const mainCategorySelect = document.getElementById('main_category_id');
             const subCategorySelect = document.getElementById('sub_category_id');
+            const currentStockInput = document.getElementById('current_stock_kg');
+            const minimumStockInput = document.getElementById('minimum_stock_alert');
+            const purchasePriceInput = document.getElementById('purchase_price_per_kg');
+            const sellingPriceInput = document.getElementById('selling_price_per_kg');
+
+            function toNumber(value, fallback = 0) {
+                const parsed = parseFloat(value);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            }
+
+            function updateSummary() {
+                const stock = toNumber(currentStockInput?.value, 0);
+                const minStock = toNumber(minimumStockInput?.value, 0);
+                const purchasePrice = toNumber(purchasePriceInput?.value, 0);
+                const sellingPrice = toNumber(sellingPriceInput?.value, 0);
+
+                const quantityEl = document.getElementById('summaryQuantity');
+                const profitEl = document.getElementById('summaryProfit');
+                const statusEl = document.getElementById('summaryStatus');
+                const categoryEl = document.getElementById('summaryCategory');
+
+                if (quantityEl) {
+                    quantityEl.textContent = stock.toFixed(3);
+                }
+
+                if (profitEl) {
+                    profitEl.textContent = (sellingPrice - purchasePrice).toFixed(2);
+                }
+
+                if (statusEl) {
+                    statusEl.classList.remove('badge-success', 'badge-warning', 'badge-danger');
+
+                    if (stock > minStock) {
+                        statusEl.classList.add('badge-success');
+                        statusEl.textContent = 'متوفر';
+                    } else if (stock > 0) {
+                        statusEl.classList.add('badge-warning');
+                        statusEl.textContent = 'حد أدنى';
+                    } else {
+                        statusEl.classList.add('badge-danger');
+                        statusEl.textContent = 'نفد';
+                    }
+                }
+
+                if (categoryEl && subCategorySelect) {
+                    const selectedOption = subCategorySelect.options[subCategorySelect.selectedIndex];
+                    if (selectedOption && selectedOption.value) {
+                        categoryEl.textContent = selectedOption.textContent;
+                    }
+                }
+            }
 
             if (!mainCategorySelect) {
                 console.error('main_category_id element not found');
@@ -210,15 +257,29 @@
                     loadSubcategories(mainCategoryId);
                 } else {
                     subCategorySelect.innerHTML = '<option value="">-- اختر قسماً فرعياً --</option>';
+                    updateSummary();
+                }
+            });
+
+            if (subCategorySelect) {
+                subCategorySelect.addEventListener('change', updateSummary);
+            }
+
+            [currentStockInput, minimumStockInput, purchasePriceInput, sellingPriceInput].forEach(input => {
+                if (input) {
+                    input.addEventListener('input', updateSummary);
+                    input.addEventListener('change', updateSummary);
                 }
             });
 
             // Load initial subcategories on page load
-            const initialMainCategoryId = {{ $product->subCategory->main_category_id }};
+            const initialMainCategoryId = {{ $product->main_category_id ?? 'null' }};
             const initialSubCategoryId = {{ $product->sub_category_id }};
             if (initialMainCategoryId) {
                 loadSubcategories(initialMainCategoryId, initialSubCategoryId);
             }
+
+            updateSummary();
         });
 
         function loadSubcategories(mainCategoryId, selectedSubcategoryId = null) {
@@ -251,6 +312,8 @@
                         subCategorySelect.innerHTML = '<option value="">لا توجد فئات فرعية</option>';
                     }
                     subCategorySelect.disabled = false;
+                    const changeEvent = new Event('change');
+                    subCategorySelect.dispatchEvent(changeEvent);
                 })
                 .catch(error => {
                     console.error('خطأ:', error);

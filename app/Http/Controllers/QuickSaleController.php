@@ -16,12 +16,34 @@ class QuickSaleController extends Controller
 
     public function index(Request $request)
     {
-        $quickSales = Invoice::where('type', 'quick')
-            ->with('items')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        try {
+            $quickSales = Invoice::where('type', 'quick')
+                ->with('items')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
 
-        return view('quick-sales.index', ['quickSales' => $quickSales]);
+                    $query->where(function ($q) use ($search) {
+                        $q->where('invoice_number', 'like', "%{$search}%")
+                            ->orWhere('customer_name', 'like', "%{$search}%");
+                    });
+                })
+                ->when($request->filled('payment_method'), function ($query) use ($request) {
+                    $query->where('payment_method', $request->input('payment_method'));
+                })
+                ->when($request->filled('date_from'), function ($query) use ($request) {
+                    $query->whereDate('invoice_date', '>=', $request->input('date_from'));
+                })
+                ->when($request->filled('date_to'), function ($query) use ($request) {
+                    $query->whereDate('invoice_date', '<=', $request->input('date_to'));
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('quick-sales.index', ['quickSales' => $quickSales]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function create()

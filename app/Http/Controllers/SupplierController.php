@@ -10,17 +10,26 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
-        $suppliers = Supplier::query();
+        try {
+            $suppliers = Supplier::query()
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
 
-        if ($request->has('search')) {
-            $suppliers->where('name_ar', 'like', '%' . $request->search . '%')
-                ->orWhere('name_en', 'like', '%' . $request->search . '%')
-                ->orWhere('email', 'like', '%' . $request->search . '%')
-                ->orWhere('phone', 'like', '%' . $request->search . '%');
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name_ar', 'like', "%{$search}%")
+                            ->orWhere('name_en', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('settings.suppliers.index', compact('suppliers'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $suppliers = $suppliers->paginate(15);
-        return view('settings.suppliers.index', compact('suppliers'));
     }
 
     public function create()

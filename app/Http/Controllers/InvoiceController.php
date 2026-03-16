@@ -18,13 +18,39 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
-        $invoices = Invoice::with('client', 'items')
-            ->whereNotNull('client_id')
-            ->where('type', 'regular')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        try {
+            $invoices = Invoice::with('client', 'items')
+                ->whereNotNull('client_id')
+                ->where('type', 'regular')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
 
-        return view('invoices.index', ['invoices' => $invoices]);
+                    $query->where(function ($q) use ($search) {
+                        $q->where('invoice_number', 'like', "%{$search}%")
+                            ->orWhereHas('client', function ($clientQuery) use ($search) {
+                                $clientQuery->where('name', 'like', "%{$search}%")
+                                    ->orWhere('name_ar', 'like', "%{$search}%")
+                                    ->orWhere('phone', 'like', "%{$search}%");
+                            });
+                    });
+                })
+                ->when($request->filled('status'), function ($query) use ($request) {
+                    $query->where('status', $request->input('status'));
+                })
+                ->when($request->filled('date_from'), function ($query) use ($request) {
+                    $query->whereDate('invoice_date', '>=', $request->input('date_from'));
+                })
+                ->when($request->filled('date_to'), function ($query) use ($request) {
+                    $query->whereDate('invoice_date', '<=', $request->input('date_to'));
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('invoices.index', ['invoices' => $invoices]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function create()

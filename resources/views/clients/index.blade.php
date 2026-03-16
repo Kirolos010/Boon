@@ -25,14 +25,19 @@
                 <div class="col-md-3">
                     <select name="status" class="form-select">
                         <option value="">-- جميع الحالات --</option>
-                        <option value="active">نشط</option>
-                        <option value="inactive">غير نشط</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشط</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>غير نشط</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-search"></i> بحث
                     </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ route('clients.index') }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-rotate-left"></i> إعادة تعيين
+                    </a>
                 </div>
             </form>
         </div>

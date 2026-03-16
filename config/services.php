@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'google_drive' => [
+        // OAuth2 credentials (from Google Cloud Console → OAuth 2.0 Client IDs)
+        'client_id'     => env('GOOGLE_DRIVE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_DRIVE_CLIENT_SECRET'),
+        // Stored refresh token — obtained once via: php artisan backup:google-oauth-setup
+        'refresh_token' => env('GOOGLE_DRIVE_REFRESH_TOKEN'),
+        // Target folder ID in Google Drive (any regular folder you own)
+        'folder_id'     => env('GOOGLE_DRIVE_FOLDER_ID'),
+        // Optional: full path to mysqldump / pg_dump executables
+        'mysqldump_path' => env('MYSQLDUMP_PATH'),
+        'pg_dump_path'   => env('PG_DUMP_PATH'),
+    ],
+
 ];

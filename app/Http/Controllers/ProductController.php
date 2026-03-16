@@ -18,11 +18,49 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::with(['mainCategory', 'subCategory', 'supplier'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        try {
+            $mainCategories = MainCategory::orderBy('name_ar')->get(['id', 'name_ar', 'name']);
 
-        return view('products.index', ['products' => $products]);
+            $products = Product::with(['mainCategory', 'subCategory', 'supplier'])
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('name_ar', 'like', "%{$search}%")
+                            ->orWhere('sku', 'like', "%{$search}%");
+                    });
+                })
+                ->when($request->filled('main_category_id'), function ($query) use ($request) {
+                    $query->where('main_category_id', (int) $request->input('main_category_id'));
+                })
+                ->when($request->filled('status'), function ($query) use ($request) {
+                    $status = (string) $request->input('status');
+
+                    if ($status === 'in-stock') {
+                        $query->whereColumn('current_stock_kg', '>', 'minimum_stock_alert');
+                    }
+
+                    if ($status === 'low-stock') {
+                        $query->where('current_stock_kg', '>', 0)
+                            ->whereColumn('current_stock_kg', '<=', 'minimum_stock_alert');
+                    }
+
+                    if ($status === 'out') {
+                        $query->where('current_stock_kg', '<=', 0);
+                    }
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('products.index', [
+                'products' => $products,
+                'mainCategories' => $mainCategories,
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function create()
@@ -139,16 +177,20 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
+            $validated = $request->validate([
+                'quantity' => 'required|numeric|not_in:0',
+                'reference' => 'required|string|in:adjustment,purchase,sales,inventory,return',
+                'notes' => 'nullable|string|max:1000',
+            ]);
+
             $reference = $request->input('reference') ?? 'adjustment';
             $notes = $request->input('notes') ?? '';
 
-            // Build notes message
-            $notesMessage = "[$reference] $notes";
-
             $movement = $this->productService->adjustStock(
                 $product,
-                $request->input('quantity'),
-                $notesMessage
+                (float) $validated['quantity'],
+                (string) $validated['reference'],
+                (string) ($validated['notes'] ?? '')
             );
 
             return redirect()->route('products.show', $product)

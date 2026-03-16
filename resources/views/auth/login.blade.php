@@ -155,6 +155,34 @@
             color: #c4a87d;
         }
 
+        .password-toggle {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a89888;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+
+        .password-toggle:hover {
+            color: #c4a87d;
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            color: #c4a87d;
+        }
+
         .checkbox-wrapper {
             display: flex;
             align-items: center;
@@ -387,6 +415,25 @@
             }
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePasswordBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            if (togglePasswordBtn && passwordInput) {
+                togglePasswordBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const isPassword = passwordInput.type === 'password';
+                    passwordInput.type = isPassword ? 'text' : 'password';
+
+                    // تغيير الأيقونة
+                    const icon = togglePasswordBtn.querySelector('i');
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="login-container">
@@ -458,6 +505,14 @@
                                 placeholder="أدخل كلمة المرور"
                                 required
                             >
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="password-toggle"
+                                title="إظهار/إخفاء كلمة المرور"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </button>
                             <i class="fas fa-lock input-icon"></i>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>

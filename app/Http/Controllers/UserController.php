@@ -13,15 +13,24 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('role');
+        try {
+            $users = User::with('role')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
 
-        if ($request->has('search')) {
-            $users->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('email', 'like', '%' . $request->search . '%');
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('settings.users.index', compact('users'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $users = $users->paginate(15);
-        return view('settings.users.index', compact('users'));
     }
 
     public function create()

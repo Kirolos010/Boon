@@ -39,11 +39,13 @@
                     <input type="text" name="search" class="form-control" placeholder="بحث بالاسم أو الكود..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-3">
-                    <select name="category" class="form-select">
+                    <select name="main_category_id" class="form-select">
                         <option value="">-- جميع الفئات --</option>
-                        <option value="coffee" {{ request('category') == 'coffee' ? 'selected' : '' }}>القهوة</option>
-                        <option value="tea" {{ request('category') == 'tea' ? 'selected' : '' }}>الشاي</option>
-                        <option value="herbs" {{ request('category') == 'herbs' ? 'selected' : '' }}>الأعشاب</option>
+                        @foreach(($mainCategories ?? collect()) as $mainCategory)
+                            <option value="{{ $mainCategory->id }}" {{ (string) request('main_category_id') === (string) $mainCategory->id ? 'selected' : '' }}>
+                                {{ $mainCategory->name_ar ?? $mainCategory->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -54,10 +56,13 @@
                         <option value="out" {{ request('status') == 'out' ? 'selected' : '' }}>نفد</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
                         <i class="fas fa-search"></i> بحث
                     </button>
+                    <a href="{{ route('products.index') }}" class="btn btn-outline-secondary flex-fill">
+                        <i class="fas fa-rotate-left"></i>
+                    </a>
                 </div>
             </form>
         </div>

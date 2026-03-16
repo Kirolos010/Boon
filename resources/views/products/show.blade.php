@@ -177,11 +177,21 @@
                                 @foreach($product->stockMovements as $movement)
                                     <tr>
                                         <td>
+                                            @php
+                                                $movementName = match($movement->reference_type) {
+                                                    'purchase' => 'شراء',
+                                                    'sales', 'invoice' => 'مبيعات',
+                                                    'inventory' => 'جرد',
+                                                    'return' => 'مرتجع',
+                                                    default => 'تعديل يدوي',
+                                                };
+                                            @endphp
                                             @if($movement->type === 'in')
                                                 <span class="badge badge-success">دخول</span>
                                             @else
                                                 <span class="badge badge-danger">خروج</span>
                                             @endif
+                                            <span class="badge badge-info ms-1">{{ $movementName }}</span>
                                         </td>
                                         <td>{{ $movement->quantity_kg }}</td>
                                         <td>{{ $movement->notes ?? '-' }}</td>
@@ -380,15 +390,23 @@
                 }
             }
 
-            // Adjust quantity sign based on form submission
-            document.querySelector('form').addEventListener('submit', function(e) {
-                const quantityInput = document.getElementById('quantity');
-                if (!isAddMode) {
-                    quantityInput.value = -Math.abs(quantityInput.value);
-                } else {
-                    quantityInput.value = Math.abs(quantityInput.value);
-                }
-            });
+            // Adjust quantity sign based on stock-adjustment form only.
+            const adjustStockForm = document.querySelector('#adjustStockModal form');
+            if (adjustStockForm) {
+                adjustStockForm.addEventListener('submit', function() {
+                    const quantityInput = document.getElementById('quantity');
+
+                    if (!quantityInput) {
+                        return;
+                    }
+
+                    if (!isAddMode) {
+                        quantityInput.value = -Math.abs(quantityInput.value);
+                    } else {
+                        quantityInput.value = Math.abs(quantityInput.value);
+                    }
+                });
+            }
         </script>
     @endsection
 @endsection

@@ -70,6 +70,8 @@ class ProductService
     {
         return DB::transaction(function () use ($product, $data) {
             try {
+                $currentStockBeforeUpdate = (float) $product->current_stock_kg;
+
                 // Keep existing SKU if not provided
                 $sku = $data['sku'] ?? $product->sku;
 
@@ -92,9 +94,26 @@ class ProductService
                     'notes' => $data['notes'] ?? $product->notes,
                 ]);
 
-                // Handle stock adjustment if provided
-                if (isset($data['stock_adjustment'])) {
-                    $this->adjustStock($product, $data['stock_adjustment'], 'تعديل يدوي');
+                // If update form sends an absolute stock value, record only the delta as manual adjustment.
+                if (array_key_exists('current_stock_kg', $data) && $data['current_stock_kg'] !== null) {
+                    $targetStock = (float) $data['current_stock_kg'];
+                    $stockDelta = $targetStock - $currentStockBeforeUpdate;
+
+                    if (abs($stockDelta) > 0) {
+                        $this->adjustStock(
+                            $product,
+                            $stockDelta,
+                            'adjustment',
+                            'تعديل يدوي من صفحة التحديث'
+                        );
+                    }
+                } elseif (isset($data['stock_adjustment'])) {
+                    $this->adjustStock(
+                        $product,
+                        (float) $data['stock_adjustment'],
+                        'adjustment',
+                        'تعديل يدوي'
+                    );
                 }
 
                 return $product;
@@ -107,9 +126,14 @@ class ProductService
     /**
      * Adjust product stock
      */
-    public function adjustStock(Product $product, float $quantity, string $reason = ''): StockMovement
+    public function adjustStock(
+        Product $product,
+        float $quantity,
+        string $referenceType = 'adjustment',
+        string $reason = ''
+    ): StockMovement
     {
-        return DB::transaction(function () use ($product, $quantity, $reason) {
+        return DB::transaction(function () use ($product, $quantity, $referenceType, $reason) {
             $type = $quantity > 0 ? StockMovement::TYPE_IN : StockMovement::TYPE_OUT;
             $absQuantity = abs($quantity);
 
@@ -123,7 +147,7 @@ class ProductService
                 'product_id' => $product->id,
                 'type' => $type,
                 'quantity_kg' => $absQuantity,
-                'reference_type' => 'adjustment',
+                'reference_type' => $referenceType,
                 'notes' => $reason,
                 'created_by' => Auth::id(),
             ]);
@@ -157,6 +181,10 @@ class ProductService
      */
     public function getProductDetails(Product $product): array
     {
+        $totalPurchased = $product->stockMovements()
+            ->stockIn()
+            ->sum('quantity_kg');
+
         return [
             'product' => $product,
             'category' => $product->mainCategory,
@@ -165,7 +193,7 @@ class ProductService
             'profit_margin' => $product->getProfitMarginPercentage(),
             'is_low_stock' => $product->isLowStock(),
             'total_sold' => $product->invoiceItems()->sum('quantity_kg'),
-            'total_purchased' => $product->purchaseItems()->sum('quantity_kg'),
+            'total_purchased' => $totalPurchased,
             'stock_movements' => $product->stockMovements()
                 ->latest()
                 ->take(10)

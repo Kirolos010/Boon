@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DatabaseBackupService;
 use App\Services\ReportService;
 use App\Services\InvoiceService;
 use App\Services\ProductService;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     public function __construct(
+        protected DatabaseBackupService $databaseBackupService,
         protected ReportService $reportService,
         protected InvoiceService $invoiceService,
         protected ProductService $productService
@@ -112,5 +114,21 @@ class DashboardController extends Controller
             'date' => $date,
             'dailyClosing' => $dailyClosing,
         ]);
+    }
+
+    public function runDatabaseBackup()
+    {
+        try {
+            // Reuse the same service as the Artisan command so the web button and cron job stay in sync.
+            $backup = $this->databaseBackupService->createAndUploadBackup();
+
+            return redirect()->route('dashboard')
+                ->with('success', 'تم رفع النسخة الاحتياطية بنجاح. Google Drive File ID: '.$backup['google_file_id']);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return redirect()->route('dashboard')
+                ->withErrors(['backup' => $exception->getMessage()]);
+        }
     }
 }

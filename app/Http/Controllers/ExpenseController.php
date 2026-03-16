@@ -12,10 +12,35 @@ class ExpenseController extends Controller
 {
     public function index(Request $request)
     {
-        $expenses = Expense::with('category', 'creator')
-            ->paginate(15);
+        try {
+            $expenses = Expense::with('category', 'creator')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $search = trim((string) $request->input('search'));
 
-        return view('expenses.index', ['expenses' => $expenses]);
+                    $query->where(function ($q) use ($search) {
+                        $q->where('description', 'like', "%{$search}%")
+                            ->orWhere('reference', 'like', "%{$search}%")
+                            ->orWhere('notes', 'like', "%{$search}%")
+                            ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                                $categoryQuery->where('name', 'like', "%{$search}%")
+                                    ->orWhere('name_ar', 'like', "%{$search}%");
+                            });
+                    });
+                })
+                ->when($request->filled('date_from'), function ($query) use ($request) {
+                    $query->whereDate('expense_date', '>=', $request->input('date_from'));
+                })
+                ->when($request->filled('date_to'), function ($query) use ($request) {
+                    $query->whereDate('expense_date', '<=', $request->input('date_to'));
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('expenses.index', ['expenses' => $expenses]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function create()

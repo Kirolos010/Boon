@@ -38,6 +38,9 @@
             id="{{ $name ?? '' }}"
             placeholder="{{ $placeholder ?? '' }}"
             value="{{ old($name ?? '', $value ?? '') }}"
+            @if(isset($step)) step="{{ $step }}" @endif
+            @if(isset($min)) min="{{ $min }}" @endif
+            @if(isset($max)) max="{{ $max }}" @endif
             {{ ($required ?? false) ? 'required' : '' }}>
     @endif
 

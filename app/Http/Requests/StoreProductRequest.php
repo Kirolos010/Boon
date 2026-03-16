@@ -14,7 +14,8 @@ class StoreProductRequest extends FormRequest
 
     public function rules(): array
     {
-        $productId = $this->route('product') ? $this->route('product')->id : null;
+        $routeProduct = $this->route('product');
+        $productId = is_object($routeProduct) ? ($routeProduct->id ?? null) : $routeProduct;
 
         return [
             'name_ar' => 'required|string|max:255',

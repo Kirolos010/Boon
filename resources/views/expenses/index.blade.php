@@ -60,10 +60,13 @@
                 <div class="col-md-3">
                     <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
                         <i class="fas fa-search"></i> بحث
                     </button>
+                    <a href="{{ route('expenses.index') }}" class="btn btn-outline-secondary flex-fill">
+                        <i class="fas fa-rotate-left"></i> إعادة
+                    </a>
                 </div>
             </form>
         </div>
