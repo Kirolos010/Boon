@@ -11,8 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append([
+            \App\Http\Middleware\CheckMachineLicense::class,
+        ]);
+
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'license' => \App\Http\Middleware\CheckMachineLicense::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

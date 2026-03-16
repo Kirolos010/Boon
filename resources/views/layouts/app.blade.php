@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title') - الغالى ✨</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon-bean.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon-bean.svg') }}">
 
     <!-- Bootstrap 5.3 RTL -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
