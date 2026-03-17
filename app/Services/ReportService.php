@@ -9,6 +9,7 @@ use App\Models\Expense;
 use App\Models\Product;
 use App\Models\Client;
 use Carbon\Carbon;
+use FontLib\Table\Type\name;
 use Illuminate\Support\Facades\DB;
 
 class ReportService
@@ -84,7 +85,12 @@ class ReportService
 
         $invoices = Invoice::dateBetween($startDate->toDateString(), $endDate->toDateString())
             ->regular()
-            ->with(['client', 'items'])
+            ->with([
+                'client' => function ($query) {
+                    $query->withTrashed();
+                },
+                'items',
+            ])
             ->get()
             ->groupBy('client_id');
 
@@ -98,9 +104,9 @@ class ReportService
 
             $report[] = [
                 'client_id' => $clientId,
-                'client_name' => $client->name,
-                'client_name_ar' => $client->name_ar,
-                'phone' => $client->phone,
+                'client_name' => $client->name_ar??$client->name ?? 'غير معروف',
+                'client_name_ar' => $client->name_ar ??  null,
+                'phone' => $client->phone ?? null,
                 'total_invoices' => $totalInvoices,
                 'total_amount' => round($totalAmount, 3),
                 'total_paid' => round($totalPaid, 3),

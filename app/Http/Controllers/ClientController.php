@@ -89,21 +89,31 @@ class ClientController extends Controller
         }
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         try {
             $client = Client::findOrFail($id);
             $client->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'تم حذف العميل بنجاح',
-            ]);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'تم حذف العميل بنجاح',
+                ]);
+            }
+
+            return redirect()->route('clients.index')
+                ->with('success', 'تم حذف العميل بنجاح');
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 400);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                ], 400);
+            }
+
+            return redirect()->route('clients.index')
+                ->withErrors(['error' => $e->getMessage()]);
         }
     }
 
