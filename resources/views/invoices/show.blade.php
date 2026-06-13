@@ -23,6 +23,16 @@
                     <h3 class="mb-1">فاتورة مبيعات</h3>
                     <div>رقم الفاتورة: {{ $invoice->invoice_number }}</div>
                     <div>التاريخ: {{ $invoice->invoice_date->format('Y-m-d H:i') }}</div>
+                    <div>
+                        حالة الفاتورة:
+                        @if($invoice->status === 'paid')
+                            <span class="badge bg-success">مدفوعة</span>
+                        @elseif($invoice->status === 'partial')
+                            <span class="badge bg-warning text-dark">مدفوعة جزئياً</span>
+                        @else
+                            <span class="badge bg-danger">غير مدفوعة</span>
+                        @endif
+                    </div>
                 </div>
                 <div class="text-start">
                     <div style="font-size: 18px; font-weight: 700; color: #6F4E37;"> الغــــالـــى </div>
@@ -91,6 +101,16 @@
                 <h2 class="fw-bold mb-2"><i class="fas fa-file-invoice text-primary"></i> فاتورة مبيعات</h2>
                 <p class="text-muted mb-1">رقم الفاتورة: <span class="fw-bold text-dark">{{ $invoice->invoice_number }}</span></p>
                 <p class="text-muted mb-0">التاريخ: <span class="fw-bold text-dark">{{ $invoice->invoice_date->format('Y-m-d H:i') }}</span></p>
+                <p class="mt-2 mb-0">
+                    <strong>حالة الفاتورة:</strong>
+                    @if($invoice->status === 'paid')
+                        <span class="badge bg-success">مدفوعة</span>
+                    @elseif($invoice->status === 'partial')
+                        <span class="badge bg-warning text-dark">مدفوعة جزئياً</span>
+                    @else
+                        <span class="badge bg-danger">غير مدفوعة</span>
+                    @endif
+                </p>
             </div>
             <div class="text-start">
                 <h5 class="mb-1">الغالى للبن والأعشاب</h5>
@@ -240,43 +260,43 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Payment Summary -->
-            <div class="row mt-3 g-3">
-                <div class="col-md-4">
-                    <div class="card bg-primary bg-opacity-10 border-primary">
-                        <div class="card-body text-center">
-                            <p class="text-muted mb-2 small">إجمالي الفاتورة</p>
-                            <h4 class="fw-bold text-primary mb-0">{{ number_format($invoice->total, 2) }} ج.م</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-success bg-opacity-10 border-success">
-                        <div class="card-body text-center">
-                            <p class="text-muted mb-2 small">المدفوع</p>
-                            <h4 class="fw-bold text-success mb-0">{{ number_format($invoice->amount_paid, 2) }} ج.م</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} bg-opacity-10 border-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }}">
-                        <div class="card-body text-center">
-                            <p class="text-muted mb-2 small">المتبقي</p>
-                            <h4 class="fw-bold text-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} mb-0">{{ number_format($invoice->remaining_balance, 2) }} ج.م</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
         @else
             <p class="text-center text-muted py-4">
                 <i class="fas fa-info-circle"></i> لا توجد دفعات مسجلة
             </p>
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle"></i>
-                <strong>المبلغ المستحق:</strong> {{ number_format($invoice->total, 2) }} ج.م
+                <strong>حالة الفاتورة:</strong> غير مدفوعة
             </div>
         @endif
+
+        <!-- Payment Summary -->
+        <div class="row mt-3 g-3">
+            <div class="col-md-4">
+                <div class="card bg-primary bg-opacity-10 border-primary">
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-2 small">إجمالي الفاتورة</p>
+                        <h4 class="fw-bold text-primary mb-0">{{ number_format($invoice->total, 2) }} ج.م</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success bg-opacity-10 border-success">
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-2 small">المدفوع</p>
+                        <h4 class="fw-bold text-success mb-0">{{ number_format($invoice->amount_paid, 2) }} ج.م</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} bg-opacity-10 border-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }}">
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-2 small">المتبقي</p>
+                        <h4 class="fw-bold text-{{ $invoice->remaining_balance > 0 ? 'danger' : 'secondary' }} mb-0">{{ number_format($invoice->remaining_balance, 2) }} ج.م</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
     </x-card>
 
     <!-- Action Buttons -->

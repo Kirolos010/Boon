@@ -166,6 +166,7 @@
                         <select id="payment_status" class="form-select">
                             <option value="full">دفع المبلغ كامل</option>
                             <option value="partial">دفع جزء من المبلغ</option>
+                            <option value="unpaid">لم يتم الدفع</option>
                         </select>
                     </div>
 
@@ -564,6 +565,8 @@
                 const paymentStatus = document.getElementById('payment_status')?.value;
                 if (paymentStatus === 'full') {
                     amountPaidInput.value = total.toFixed(2);
+                } else if (paymentStatus === 'unpaid') {
+                    amountPaidInput.value = '0';
                 }
             }
         }
@@ -587,17 +590,26 @@
             const total = parseFloat(document.getElementById('totalAmountInput').value) || 0;
 
             if (this.value === 'partial') {
-                // Show the input for partial payment
+                // Partial payment: user enters amount manually.
                 amountPaidGroup.style.display = 'block';
                 amountPaidInput.value = '';
                 amountPaidInput.max = total.toFixed(2);
                 amountPaidInput.required = true;
+                amountPaidInput.readOnly = false;
+            } else if (this.value === 'unpaid') {
+                // Unpaid invoice: lock amount at 0.
+                amountPaidGroup.style.display = 'block';
+                amountPaidInput.value = '0';
+                amountPaidInput.max = total.toFixed(2);
+                amountPaidInput.required = false;
+                amountPaidInput.readOnly = true;
             } else {
-                // For full payment - keep visible but set value
+                // Full payment: lock amount to invoice total.
                 amountPaidGroup.style.display = 'block';
                 amountPaidInput.value = total.toFixed(2);
                 amountPaidInput.max = total.toFixed(2);
                 amountPaidInput.required = false;
+                amountPaidInput.readOnly = true;
             }
         });
 
