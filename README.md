@@ -1,59 +1,276 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Boon - POS and Inventory Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Boon is a Laravel 12 web application for daily business operations including:
 
-## About Laravel
+- Product and stock management
+- Sales (invoices and quick sales)
+- Purchases and supplier tracking
+- Expense management
+- Financial and inventory reports
+- PDF and Excel report export
+- Scheduled database backups to Google Drive
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Backend: Laravel 12, PHP 8.2+
+- Database: MySQL or PostgreSQL
+- Frontend build: Vite, Tailwind CSS 4
+- Report export: maatwebsite/excel, barryvdh/laravel-dompdf
+- Google Drive integration: google/apiclient
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Main Modules
 
-## Learning Laravel
+- Dashboard and KPIs
+- Products with stock adjustment and low-stock checks
+- Clients and client invoice history
+- Invoices with payment recording
+- Quick sales
+- Purchases with receive flow
+- Expenses and expense categories
+- Reports:
+	- Sales report
+	- Profit report
+	- Inventory report
+	- Daily closing report
+- Settings:
+	- Main categories and subcategories
+	- Suppliers
+	- Users
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Prerequisites
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Before setup, make sure the following are installed:
 
-## Laravel Sponsors
+- PHP 8.2+
+- Composer 2+
+- Node.js 20+ and npm
+- MySQL 8+ or PostgreSQL 13+
+- Git
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+For scheduled SQL backups:
 
-### Premium Partners
+- `mysqldump` (for MySQL/MariaDB) or `pg_dump` (for PostgreSQL)
+- Google Cloud OAuth credentials
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Installation
 
-## Contributing
+1. Clone repository
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone <your-repo-url> boon
+cd boon
+```
 
-## Code of Conduct
+2. Install backend and frontend dependencies
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+npm install
+```
 
-## Security Vulnerabilities
+3. Create environment file
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+4. Generate application key
+
+```bash
+php artisan key:generate
+```
+
+5. Configure database in `.env`
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=boon
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+6. Run migrations and seeders
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+7. Build frontend assets
+
+```bash
+npm run build
+```
+
+8. Start development services
+
+Option A (single command, recommended):
+
+```bash
+composer run dev
+```
+
+Option B (manual):
+
+```bash
+php artisan serve
+npm run dev
+```
+
+## One-command Setup
+
+You can use the built-in setup script:
+
+```bash
+composer run setup
+```
+
+Then run seeders manually:
+
+```bash
+php artisan db:seed
+```
+
+## Default Seeded Users
+
+After `php artisan db:seed`, these users are created:
+
+- `admin@boon.local` / `password`
+- `sales@boon.local` / `password`
+- `accountant@boon.local` / `password`
+
+Important: Change these passwords immediately in non-local environments.
+
+## License Host Protection (Important)
+
+The app includes global machine license middleware. If host name does not match the expected value, requests are blocked with `403 License Error`.
+
+Set these in `.env`:
+
+```env
+LICENSE_ALLOWED_HOST=YOUR_MACHINE_HOSTNAME
+LICENSE_ALERT_EMAIL=alerts@example.com
+```
+
+To get host name:
+
+- Windows: `hostname`
+- Linux/macOS: `hostname`
+
+## Google Drive Database Backup Setup
+
+The app supports SQL backup upload to Google Drive via OAuth refresh token.
+
+### 1) Add Google credentials to `.env`
+
+```env
+GOOGLE_DRIVE_CLIENT_ID=
+GOOGLE_DRIVE_CLIENT_SECRET=
+GOOGLE_DRIVE_REFRESH_TOKEN=
+GOOGLE_DRIVE_FOLDER_ID=
+
+# Optional explicit dump binary paths:
+MYSQLDUMP_PATH=
+PG_DUMP_PATH=
+```
+
+### 2) Generate refresh token (one-time)
+
+```bash
+php artisan backup:google-oauth-setup
+```
+
+### 3) Validate configuration
+
+```bash
+php artisan backup:diagnose-drive
+```
+
+### 4) Run backup manually
+
+```bash
+php artisan backup:database-to-google-drive
+```
+
+### 5) Scheduled backup
+
+The app schedules backup daily at 02:00 through Laravel scheduler.
+
+Set your server cron to run every minute:
+
+```bash
+* * * * * php /path-to-project/artisan schedule:run >> /dev/null 2>&1
+```
+
+On Windows Task Scheduler, run `php artisan schedule:run` every minute.
+
+## Useful Commands
+
+```bash
+# Run tests
+composer run test
+
+# Clear config/cache/routes/views
+php artisan optimize:clear
+
+# Rebuild frontend for production
+npm run build
+
+# Run queue worker manually (if needed)
+php artisan queue:listen --tries=1 --timeout=0
+```
+
+## Project Structure (high level)
+
+```text
+app/
+	Console/Commands/        # Custom artisan commands (backup, diagnostics)
+	Http/Controllers/        # Feature controllers
+	Http/Middleware/         # Role and machine license middleware
+	Models/                  # Eloquent models
+	Services/                # Business/domain services
+database/
+	migrations/              # Database schema changes
+	seeders/                 # Initial/sample data
+routes/
+	web.php                  # Web routes
+	console.php              # Artisan commands and scheduler definitions
+resources/
+	views/                   # Blade templates
+	css/, js/                # Frontend assets
+```
+
+## Troubleshooting
+
+- `403 License Error`
+	- Verify `LICENSE_ALLOWED_HOST` matches current machine hostname exactly.
+
+- Backup fails with dump tool not found
+	- Install database client tools or set `MYSQLDUMP_PATH` / `PG_DUMP_PATH` in `.env`.
+
+- Google backup auth errors
+	- Re-run `php artisan backup:google-oauth-setup`.
+	- Confirm `GOOGLE_DRIVE_FOLDER_ID` is valid and accessible.
+
+- Frontend assets not loading
+	- Run `npm install` then `npm run dev` (development) or `npm run build` (production).
+
+## Deployment Notes
+
+- Set `APP_ENV=production` and `APP_DEBUG=false`.
+- Use secure database credentials.
+- Replace seeded default user passwords.
+- Configure queue and scheduler in production process manager.
+- Ensure writable permissions for `storage/` and `bootstrap/cache/`.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License unless your organization policy states otherwise.
